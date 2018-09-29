@@ -4,7 +4,9 @@
 #define USE_MY_PTHREAD 1
 #ifdef USE_MY_PTHREAD
 
-#include <sys/ucontext.h>
+#define _XOPEN_SOURCE
+#include <unistd.h>
+#include <ucontext.h>
 
 #define pthread_t my_pthread_t
 #define pthread_ptr my_pthread_ptr
@@ -14,8 +16,8 @@ typedef struct thread {
 } my_pthread_t, *my_pthread_ptr;
 
 
-#undef pthread_attr_t
-typedef void *pthread_attr_t;  // ALWAYS NULL
+// #undef pthread_attr_t
+// typedef void *pthread_attr_t;  // ALWAYS NULL
 
 #define pthread_mutex_t my_pthread_mutex_t
 #define pthread_mutex_ptr my_pthread_mutex_ptr
@@ -37,8 +39,8 @@ void my_pthread_exit(void *retval);
 // int pthread_join(pthread_t thread, void **retval);
 int my_pthread_join(pthread_t thread, void **retval);
 
-#undef pthread_mutexattr_t
-typedef void *pthread_mutexattr_t;  // ALWAYS NULL
+// #undef pthread_mutexattr_t
+// typedef void *pthread_mutexattr_t;  // ALWAYS NULL
 
 #define pthread_mutex_init my_pthread_mutex_init
 // int pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *attr);
