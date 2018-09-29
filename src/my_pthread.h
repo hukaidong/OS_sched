@@ -1,10 +1,9 @@
 #ifndef MY_PTHREAD_H
 #define MY_PTHREAD_H
 
-#define USE_MY_PTHREAD 1
 #ifdef USE_MY_PTHREAD
+#define _XOPEN_SOURCE // OSX compatibility
 
-#define _XOPEN_SOURCE
 #include <unistd.h>
 #include <ucontext.h>
 
@@ -58,8 +57,7 @@ int my_pthread_mutex_unlock(pthread_mutex_t *mutex);
 // int pthread_mutex_destroy(pthread_mutex_t *mutex);
 int my_pthread_mutex_destroy(pthread_mutex_t *mutex);
 
-
-
+#include "queue.h"
 
 #endif // USE_MY_PTHREAD
 #endif // MY_PTHREAD_H
