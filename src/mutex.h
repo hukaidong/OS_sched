@@ -2,6 +2,7 @@
 #define MY_PTHREAD_MUTEX_H
 
 #include "queue.h"
+#include "type.h"
 
 #include <ucontext.h>
 

@@ -6,7 +6,9 @@
 
 #include "type.h"
 
-// #define pthread_t my_pthread_t
+#define pthread_attr_t void
+#define pthread_t my_pthread_t
+
 #define pthread_create my_pthread_create
 // int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine) (void *), void *arg);
 int my_pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine) (void *), void *arg);
@@ -20,7 +22,9 @@ void my_pthread_exit(void *retval);
 int my_pthread_join(pthread_t thread, void **retval);
 
 
-#define pthread_t my_pthread_t
+#define pthread_mutexattr_t void
+#define pthread_mutex_t my_pthread_mutex_t
+
 #define pthread_mutex_init my_pthread_mutex_init
 // int pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *attr);
 int my_pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *attr);
