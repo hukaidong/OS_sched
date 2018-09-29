@@ -42,8 +42,12 @@ typedef void *pthread_mutexattr_t;  // ALWAYS NULL
 int my_pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *attr);
 
 #define pthread_mutex_lock my_pthread_mutex_lock
+// int pthread_mutex_lock(pthread_mutex_t *mutex);
+int my_pthread_mutex_lock(pthread_mutex_t *mutex);
 
 #define pthread_mutex_unlock my_pthread_mutex_unlock
+// int pthread_mutex_unlock(pthread_mutex_t *mutex);
+int my_pthread_mutex_unlock(pthread_mutex_t *mutex);
 
 #define pthread_mutex_destroy my_pthread_mutex_destroy
 // int pthread_mutex_destroy(pthread_mutex_t *mutex);
