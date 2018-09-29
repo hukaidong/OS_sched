@@ -6,7 +6,9 @@
 #include <unistd.h>
 #include <ucontext.h>
 
-typedef ucontext_t* Queue;
+typedef ucontext_t* ucxt_p;
+define_list(ucxt_p);
+typedef List(ucxt_p)* Qucxt;
 
 // Frequency of queue serving
 #define FREQ_HQ 20
@@ -31,7 +33,7 @@ typedef ucontext_t* Queue;
 
 ucontext_t ENTRY_SCHED_CTX, ENTRY_EXIT_CTX,
            MAIN_CTX;
-Queue QThreadH, QThreadM, QThreadL;
+Qucxt QThreadH, QThreadM, QThreadL;
 
 void __sched_init() {
   _INIT_CTX(ENTRY_SCHED_CTX, NULL);
