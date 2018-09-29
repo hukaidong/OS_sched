@@ -28,37 +28,57 @@ typedef void *Queue;
   ctx.uc_stack.ss_flags = 0; \
   } while (0)
 
-ucontext_t SCHED_CTX, MAIN_CTX;
+ucontext_t ENTRY_SCHED_CTX, ENTRY_EXIT_CTX,
+           MAIN_CTX;
 Queue* QThreadH, QThreadM, QThreadL, QThreadW;
 
 void __sched_init() {
-  __INIT_CTX(SCHED_CTX, NULL);
-  sigaddset(&(SCHED_CTX.uc_sigmask), SIGALRM);
-  makecontext(&SCHED_CTX, __sched_run_next, 0);
+  __INIT_CTX(ENTRY_SCHED_CTX, NULL);
+  sigaddset(&(ENTRY_SCHED_CTX.uc_sigmask), SIGALRM);
+  makecontext(&ENTRY_SCHED_CTX, __sched_interrupt_next, 0);
 
-  /* swapcontext(&MAIN_CTX, &SCHED_CTX); */
+  __INIT_CTX(ENTRY_EXIT_CTX, NULL);
+  sigaddset(&(ENTRY_EXIT_CTX.uc_sigmask), SIGALRM);
+  makecontext(&ENTRY_EXIT_CTX, __sched_exit_next, 0);
+
+  /* swapcontext(&MAIN_CTX, &ENTRY_SCHED_CTX); */
 }
 
-void __sched_run_next() {
-  do {
-    puts("context switched!");
-  } while (0);
-  exit(0);
+void __sched_interrupt_next() {
+  Queue* next = __sched_q_route();
+  if (next)
+  {
+  }
+  else
+  {
+    exit (1);
+  }
+}
+
+void __sched_interrupt_next() {
+  Queue* next = __sched_q_route();
+  if (next)
+  {
+  }
+  else
+  {
+    exit (1);
+  }
 }
 
 Queue* __sched_q_route()
 {
   static int index = 0;
   index = index % (FREQ_HQ + FREQ_MQ + FREQ_LQ);
-  if (index < FREQ_HQ )
+  if (index < FREQ_HQ && QThreadH != NULL)
   {
     return QThreadH;
   }
-  else if (index < FREQ_HQ + FREQ_MQ)
+  else if (index < FREQ_HQ + FREQ_MQ && QThreadL != NULL)
   {
     return QThreadM;
   }
-  else if (index < FREQ_HQ + FREQ_MQ + FREQ_LQ);
+  else if (index < FREQ_HQ + FREQ_MQ + FREQ_LQ && QThreadM != NULL);
   {
     return QThreadL;
   }
