@@ -59,7 +59,7 @@ exit(0);\
 void list_push_##type(List_##type* list, type elem) \
 { \
 list_elem##type* new_ptr = (list_elem##type*) malloc(list_elem_##type);\
-new_ptr->_date = elem;\
+new_ptr->_data = elem;\
 if(list->_size == 0)\
 {\
 list->_first = new_ptr;\
