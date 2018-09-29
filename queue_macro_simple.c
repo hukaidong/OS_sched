@@ -5,7 +5,7 @@ struct _list_##type; \
 \
 typedef struct \
 { \
-int (*is_empty)(const struct _list_##type*); \
+bool (*is_empty)(const struct _list_##type*); \
 size_t (*size)(const struct _list_##type*); \
 type (*pop_front)(struct _list_##type*); \
 void (*push_front)(struct _list_##type*, type); \
@@ -28,7 +28,7 @@ _list_functions_##type* _functions; \
 List_##type* new_list_##type(); \
 bool list_is_empty_##type(const List_##type* list); \
 size_t list_size_##type(const List_##type* list); \
-type list_pop_##type(List_##type* list)\
+type list_pop_##type(List_##type* list);\
 void list_push_##type(List_##type* list, type); \
 \
 bool list_is_empty_##type(const List_##type* list) \
@@ -46,9 +46,10 @@ type list_pop_##type(List_##type* list) \
 if(list->_size>0)\
 {\
 type temp = list->_first->_data;\
-list_elem##type* temp_p = list->_first;\
+list_elem_##type* temp_p = list->_first;\
 list->_first = list->_first->_next;\
 free(temp_p);\
+list->_size-=1;\
 return temp;\
 } else \
 {\
@@ -58,18 +59,17 @@ exit(0);\
 } \
 void list_push_##type(List_##type* list, type elem) \
 { \
-list_elem##type* new_ptr = (list_elem##type*) malloc(list_elem_##type);\
+list_elem_##type* new_ptr = (list_elem_##type*) malloc(sizeof(list_elem_##type));\
 new_ptr->_data = elem;\
 if(list->_size == 0)\
 {\
 list->_first = new_ptr;\
-list->_end = new_ptr;\
+list->_last = new_ptr;\
 } else \
-{list->_end->next = new_ptr ;\
-list->_end = new_ptr;\
-printf("The queue is empty");\
-exit(0);\
+{list->_last->_next = new_ptr ;\
+list->_last = new_ptr;\
 }\
+list->_size+=1;\
 } \
 _list_functions_##type _list_funcs_##type = { \
 &list_is_empty_##type, \
@@ -103,6 +103,39 @@ collection->_functions->size(collection)
 #define pop(collection) \
 collection->_functions->pop_front(collection)
 
-#define push(collection) \
-collection->_functions->push_front(collection)
+#define push(collection, elem) \
+collection->_functions->push_front(collection, elem)
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <time.h>
+
+typedef struct _tcb{
+    int priority;
+} tcb;
+
+define_list(tcb)
+
+int main(int argc, char* argv[]){
+    srand(time(NULL));
+    int r = rand();
+    List(tcb)* a = new_list(tcb);
+    int length = 20;
+    for(int i =0;i<length;i++){
+        tcb temp;
+        int r = rand();
+        temp.priority = r;
+        printf("%d\n",r);
+        push(a,temp);
+    }
+    printf("%zu\n",size(a));
+    printf("----------hello world-------------\n");
+    //printf("%d\n",a->_first->_data.priority);
+    for (int i =0; i<length; i++) {
+        printf("%d\n",pop(a).priority);
+    }
+    printf("%zu\n",size(a));
+    return 0;
+}
 
