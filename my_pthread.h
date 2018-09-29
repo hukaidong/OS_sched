@@ -8,20 +8,20 @@
 
 #define pthread_t my_pthread_t
 #define pthread_ptr my_pthread_ptr
-typedef struct my_pthread_t {
+typedef struct thread {
   ucontext_t *uc_link;
-  my_pthread_t *next;
-} *my_pthread_ptr;
+  struct thread *next;
+} my_pthread_t, *my_pthread_ptr;
 
 
 typedef void *pthread_attr_t;  // ALWAYS NULL
 
 #define pthread_mutex_t my_pthread_mutex_t
 #define pthread_mutex_ptr my_pthread_mutex_ptr
-typedef struct my_pthread_mutex_t {
+typedef struct thread_mutex {
   ucontext_t *owner;
-  my_pthread_mutex_t *next;
-} *my_pthread_mutex_ptr;
+  struct thread_mutex *next;
+} my_pthread_mutex_t, *my_pthread_mutex_ptr;
 
 
 #define pthread_create my_pthread_create
