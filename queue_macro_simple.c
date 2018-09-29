@@ -45,10 +45,10 @@ type list_pop_##type(List_##type* list) \
 { \
 if(list->_size>0)\
 {\
-type temp = list->_first->data;\
+type temp = list->_first->_data;\
 list_elem##type* temp_p = list->_first;\
 list->_first = list->_first->_next;\
-free(list->_first);\
+free(temp_p);\
 return temp;\
 } else \
 {\
@@ -59,14 +59,14 @@ exit(0);\
 void list_push_##type(List_##type* list, type elem) \
 { \
 list_elem##type* new_ptr = (list_elem##type*) malloc(list_elem_##type);\
+new_ptr->_data = elem;\
 if(list->_size == 0)\
 {\
 list->_first = new_ptr;\
 list->_end = new_ptr;\
 } else \
-list->_end->next = new_ptr ;\
+{list->_end->next = new_ptr ;\
 list->_end = new_ptr;\
-{\
 printf("The queue is empty");\
 exit(0);\
 }\
