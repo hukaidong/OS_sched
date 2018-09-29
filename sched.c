@@ -1,11 +1,12 @@
 #include "src/sched.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <ucontext.h>
 
-
-typedef void *Queue;
+typedef ucontext_t* Queue;
 
 // Frequency of queue serving
 #define FREQ_HQ 20
@@ -30,7 +31,7 @@ typedef void *Queue;
 
 ucontext_t ENTRY_SCHED_CTX, ENTRY_EXIT_CTX,
            MAIN_CTX;
-Queue* QThreadH, QThreadM, QThreadL, QThreadW;
+Queue QThreadH, QThreadM, QThreadL;
 
 void __sched_init() {
   __INIT_CTX(ENTRY_SCHED_CTX, NULL);
@@ -45,28 +46,32 @@ void __sched_init() {
 }
 
 void __sched_interrupt_next() {
-  Queue* next = __sched_q_route();
-  if (next)
-  {
-  }
-  else
-  {
-    exit (1);
-  }
+  ucontext_t* next = __sched_q_route();
+  assert(next);
+
 }
 
-void __sched_interrupt_next() {
-  Queue* next = __sched_q_route();
+void __sched_exit_next() {
+  ucontext_t* next = __sched_q_route();
   if (next)
   {
+    __sched_run_next(next);
   }
-  else
+  else if (!QThreadW)
   {
-    exit (1);
+    puts("Dead lock detected");
+    exit(1);
   }
+  exit(0);
 }
 
-Queue* __sched_q_route()
+void __sched_run_next(const ucontext_t* next)
+{
+  ualarm(SWAP_INTERVAL, 0);
+  setcontext(next);
+}
+
+ucontext_t* __sched_q_route()
 {
   static int index = 0;
   index = index % (FREQ_HQ + FREQ_MQ + FREQ_LQ);
