@@ -4,7 +4,7 @@
 #include <time.h>
 #include "../pthread.h"
 
-define_list(int)
+define_list(int);
 
 int main(int argc, char* argv[]){
 
