@@ -57,7 +57,7 @@ int my_pthread_mutex_unlock(pthread_mutex_t *mutex);
 // int pthread_mutex_destroy(pthread_mutex_t *mutex);
 int my_pthread_mutex_destroy(pthread_mutex_t *mutex);
 
-#include "queue.h"
+#include "./queue.h"
 
 #endif // USE_MY_PTHREAD
 #endif // MY_PTHREAD_H

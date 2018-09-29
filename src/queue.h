@@ -104,3 +104,5 @@ collection->_functions->pop_front(collection)
 
 #define push(collection, elem) \
 collection->_functions->push_front(collection, elem)
+
+

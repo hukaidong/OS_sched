@@ -34,11 +34,11 @@ ucontext_t ENTRY_SCHED_CTX, ENTRY_EXIT_CTX,
 Queue QThreadH, QThreadM, QThreadL;
 
 void __sched_init() {
-  __INIT_CTX(ENTRY_SCHED_CTX, NULL);
+  _INIT_CTX(ENTRY_SCHED_CTX, NULL);
   sigaddset(&(ENTRY_SCHED_CTX.uc_sigmask), SIGALRM);
   makecontext(&ENTRY_SCHED_CTX, __sched_interrupt_next, 0);
 
-  __INIT_CTX(ENTRY_EXIT_CTX, NULL);
+  _INIT_CTX(ENTRY_EXIT_CTX, NULL);
   sigaddset(&(ENTRY_EXIT_CTX.uc_sigmask), SIGALRM);
   makecontext(&ENTRY_EXIT_CTX, __sched_exit_next, 0);
 
@@ -57,7 +57,7 @@ void __sched_exit_next() {
   {
     __sched_run_next(next);
   }
-  else if (!QThreadW)
+  else if (0)
   {
     puts("Dead lock detected");
     exit(1);
