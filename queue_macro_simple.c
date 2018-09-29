@@ -74,7 +74,7 @@ exit(0);\
 _list_functions_##type _list_funcs_##type = { \
 &list_is_empty_##type, \
 &list_size_##type, \
-&list__##type, \
+&list_pop_##type, \
 &list_push_##type, \
 }; \
 \
