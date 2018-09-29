@@ -14,6 +14,7 @@ typedef struct thread {
 } my_pthread_t, *my_pthread_ptr;
 
 
+#undef pthread_attr_t
 typedef void *pthread_attr_t;  // ALWAYS NULL
 
 #define pthread_mutex_t my_pthread_mutex_t
@@ -36,7 +37,9 @@ void my_pthread_exit(void *retval);
 // int pthread_join(pthread_t thread, void **retval);
 int my_pthread_join(pthread_t thread, void **retval);
 
+#undef pthread_mutexattr_t
 typedef void *pthread_mutexattr_t;  // ALWAYS NULL
+
 #define pthread_mutex_init my_pthread_mutex_init
 // int pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *attr);
 int my_pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *attr);
