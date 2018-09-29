@@ -1,3 +1,6 @@
+#ifndef MY_PTHREAD_QUEUE_H
+#define MY_PTHREAD_QUEUE_H
+
 #define define_list(type) \
 struct _list_##type; \
 typedef struct \
@@ -90,4 +93,4 @@ return res; \
 #define pop(collection) collection->_functions->pop_head(collection)
 #define push(collection, elem) collection->_functions->push_tail(collection, elem)
 
-
+#endif /* ifndef MY_PTHREAD_QUEUE_H */

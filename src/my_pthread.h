@@ -1,12 +1,12 @@
-#ifndef MY_PTHREAD_H
-#define MY_PTHREAD_H
+#ifndef MY_PTHREAD_PTHREAD_H
+#define MY_PTHREAD_PTHREAD_H
 
 #ifdef USE_MY_PTHREAD
 #define _XOPEN_SOURCE  // OSX compatibility
 
-#include <unistd.h>
-#include <ucontext.h>
+#include "type.h"
 
+// #define pthread_t my_pthread_t
 #define pthread_create my_pthread_create
 // int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine) (void *), void *arg);
 int my_pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine) (void *), void *arg);
@@ -19,6 +19,8 @@ void my_pthread_exit(void *retval);
 // int pthread_join(pthread_t thread, void **retval);
 int my_pthread_join(pthread_t thread, void **retval);
 
+
+#define pthread_t my_pthread_t
 #define pthread_mutex_init my_pthread_mutex_init
 // int pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *attr);
 int my_pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *attr);
@@ -37,4 +39,4 @@ int my_pthread_mutex_destroy(pthread_mutex_t *mutex);
 
 #endif /* ifdef USE_MY_PTHREAD */
 
-#endif /* ifndef  MY_PTHREAD_H */
+#endif /* ifndef  MY_PTHREAD_PTHREAD_H */

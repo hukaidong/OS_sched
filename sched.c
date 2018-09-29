@@ -6,10 +6,6 @@
 #include <unistd.h>
 #include <ucontext.h>
 
-typedef ucontext_t* ucxt_p;
-define_list(ucxt_p);
-typedef List(ucxt_p)* Qucxt;
-
 // Frequency of queue serving
 #define FREQ_HQ 20
 #define FREQ_MQ 10
