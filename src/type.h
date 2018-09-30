@@ -4,6 +4,10 @@
 typedef ucontext* ucxt_p;
 define_list(uckt_p);
 typedef List(ucxt_p)* Qucxt;
-typedef List(ucxt_p)* my_pthread_mutex_t;
+typedef struct {
+  // Memory allignment
+  int locked;
+  Qucxt pending;
+} my_pthread_mutex_t;
 
 #endif /* ifndef MY_PTHREAD_TYPE_H */

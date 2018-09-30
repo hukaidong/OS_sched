@@ -7,6 +7,7 @@
 #include <ucontext.h>
 
 // Frequency of queue serving
+#define FREQ_FLUSH 500
 #define FREQ_HQ 20
 #define FREQ_MQ 10
 #define FREQ_LQ 1
@@ -14,23 +15,11 @@
 // swap every 20 microsecond
 #define SWAP_INTERVAL 20
 
-// size of each context stack
-#define _STACK_SIZE sizeof(char[16384])
-#define _NEW_STACK() malloc(_STACK_SIZE)
+#define QTOP 0
+#define QMED 1
+#define QLOW 2
+int last_q_invoked = QTOP;
 
-#define _INIT_CTX(ctx, link) \
-  do {\
-  getcontext(&ctx); \
-  ctx.uc_link = link; \
-  ctx.uc_stack.ss_sp = _NEW_STACK(); \
-  ctx.uc_stack.ss_size = _STACK_SIZE; \
-  ctx.uc_stack.ss_flags = 0; \
-  } while (0)
-
-ucontext_t ENTRY_SCHED_CTX, ENTRY_EXIT_CTX,
-           MAIN_CTX;
-// TODO: update element from ucontext_t to costum struct for last priority info
-Qucxt QThreadH, QThreadM, QThreadL;
 
 void __sched_init() {
   QThreadH = new_list(ucontext_t);
@@ -45,8 +34,6 @@ void __sched_init() {
   sigaddset(&(ENTRY_EXIT_CTX.uc_sigmask), SIGALRM);
   makecontext(&ENTRY_EXIT_CTX, __sched_exit_next, 0);
 
-  // TODO: ENTRY_YIELD_CTX, __sched_yield_next
-
   /* swapcontext(&MAIN_CTX, &ENTRY_SCHED_CTX); */
 }
 
@@ -57,12 +44,10 @@ void __sched_interrupt_next() {
 
 }
 
-// TODO: __sched_yield_next: release last alarm signal before next setup
-
 void __sched_exit_next() {
   // TODO: while loop
   ucontext_t* next = __sched_q_route();
-  if (next)
+  while (next)
   {
     __sched_run_next(next);
   }
@@ -74,7 +59,7 @@ void __sched_exit_next() {
   exit(0);
 }
 
-void __sched_run_next(const ucontext_t* next)
+void __sched_run_next(ucxt_p curr, const ucontext_t* next)
 {
   ualarm(SWAP_INTERVAL, 0);
   setcontext(next);
@@ -82,23 +67,39 @@ void __sched_run_next(const ucontext_t* next)
 
 ucontext_t* __sched_q_route()
 {
-  // TODO: Change to queue form & allow queue flushing (raise everything up)
-  // TODO: Update last priority info before return
-  static int index = 0;
-  index = index % (FREQ_HQ + FREQ_MQ + FREQ_LQ);
-  if (index < FREQ_HQ && QThreadH != NULL)
+  static unsigned int num_iter = 0;
+  int index = num_iter % (FREQ_HQ + FREQ_MQ + FREQ_LQ);
+  ucxt_p next = NULL;
+  if (index < FREQ_HQ && !is_empty(QThreadH))
   {
-    return QThreadH;
+    last_q_invoked = QTOP;
+    next = pop(QThreadH);
   }
-  else if (index < FREQ_HQ + FREQ_MQ && QThreadL != NULL)
+  else if (index < FREQ_HQ + FREQ_MQ && !is_empty(QThreadM))
   {
-    return QThreadM;
+    last_q_invoked = QMED;
+    next = pop(QThreadM);
   }
-  else if (index < FREQ_HQ + FREQ_MQ + FREQ_LQ && QThreadM != NULL);
+  else if (index < FREQ_HQ + FREQ_MQ + FREQ_LQ && !is_empty(QThreadL))
   {
-    return QThreadL;
+    last_q_invoked = QLOW;
+    next = pop(QThreadL);
   }
-  exit(1);  // Never happen
+
+  num_iter++;
+
+  if (num_iter % FREQ_FLUSH == 0)
+  {
+    while(!is_empty(QThreadM)) {
+      push(QThreadH, pop(QThreadM));
+    }
+    while(!is_empty(QThreadL)) {
+      push(QThreadH, pop(QThreadL));
+    }
+  }
+
+  return next;
+
 }
 
 
