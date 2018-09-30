@@ -22,9 +22,9 @@ int last_q_invoked = QTOP;
 
 
 void __sched_init() {
-  QThreadH = new_list(ucontext_t);
-  QThreadM = new_list(ucontext_t);
-  QThreadL = new_list(ucontext_t);
+  QThreadH = new_list(ucxt_p);
+  QThreadM = new_list(ucxt_p);
+  QThreadL = new_list(ucxt_p);
 
   _INIT_CTX(ENTRY_SCHED_CTX, NULL);
   sigaddset(&(ENTRY_SCHED_CTX.uc_sigmask), SIGALRM);
@@ -38,25 +38,20 @@ void __sched_init() {
 }
 
 void __sched_interrupt_next() {
-  // TODO: while loop
-  ucontext_t* next = __sched_q_route();
-  assert(next);
-
+  do {
+    ucontext_t* next = __sched_q_route();
+    ualarm(SWAP_INTERVAL, 0);
+    swapcontext(&ENTRY_SCHED_CTX, next);
+  } while (1);
 }
 
 void __sched_exit_next() {
-  // TODO: while loop
-  // TODO: free stack memory
   // WARNING: DO NOT free memory here, free it when joined
   ucontext_t* next = __sched_q_route();
   while (next)
   {
+    sigrelse(SIGALRM);
     __sched_run_next(next);
-  }
-  else if (0)
-  {
-    puts("Dead lock detected");
-    exit(1);
   }
   exit(0);
 }
