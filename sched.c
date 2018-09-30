@@ -99,7 +99,11 @@ ucontext_t* __sched_q_route()
   }
 
   return next;
-
 }
 
-
+void __sched_pthread_routine(
+    void *(*func) (void*),
+    void **rval,
+    void *args){
+  *rval = func(args);
+}

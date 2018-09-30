@@ -33,7 +33,6 @@ int my_pthread_join(pthread_t thread, void **retval);
 // int pthread_yield(void);
 int my_pthread_yield(void);
 
-
 #endif /* ifdef USE_MY_PTHREAD */
 
 #endif /* ifndef  MY_PTHREAD_PTHREAD_H */
