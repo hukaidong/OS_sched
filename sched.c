@@ -34,7 +34,7 @@ void __sched_init() {
   sigaddset(&(ENTRY_EXIT_CTX.uc_sigmask), SIGALRM);
   makecontext(&ENTRY_EXIT_CTX, __sched_exit_next, 0);
 
-  /* swapcontext(&MAIN_CTX, &ENTRY_SCHED_CTX); */
+  swapcontext(&MAIN_CTX, &ENTRY_SCHED_CTX);
 }
 
 void __sched_interrupt_next() {
@@ -46,6 +46,8 @@ void __sched_interrupt_next() {
 
 void __sched_exit_next() {
   // TODO: while loop
+  // TODO: free stack memory
+  // WARNING: DO NOT free memory here, free it when joined
   ucontext_t* next = __sched_q_route();
   while (next)
   {

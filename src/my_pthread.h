@@ -33,6 +33,10 @@ int my_pthread_join(pthread_t thread, void **retval);
 // int pthread_yield(void);
 int my_pthread_yield(void);
 
+#define EDEADLK 0
+#define EINVAL 1
+#define ESRCH 2
+
 #endif /* ifdef USE_MY_PTHREAD */
 
 #endif /* ifndef  MY_PTHREAD_PTHREAD_H */
