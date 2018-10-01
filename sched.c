@@ -22,15 +22,15 @@ int last_q_invoked = QTOP;
 
 
 void __sched_init() {
-  QThreadH = new_list(ucxt_p);
-  QThreadM = new_list(ucxt_p);
-  QThreadL = new_list(ucxt_p);
+  QThreadH = new_list(uctx_p);
+  QThreadM = new_list(uctx_p);
+  QThreadL = new_list(uctx_p);
 
-  _INIT_CTX(ENTRY_SCHED_CTX, NULL);
+  _INIT_CTX(&ENTRY_SCHED_CTX, NULL);
   sigaddset(&(ENTRY_SCHED_CTX.uc_sigmask), SIGALRM);
   makecontext(&ENTRY_SCHED_CTX, __sched_interrupt_next, 0);
 
-  _INIT_CTX(ENTRY_EXIT_CTX, NULL);
+  _INIT_CTX(&ENTRY_EXIT_CTX, NULL);
   sigaddset(&(ENTRY_EXIT_CTX.uc_sigmask), SIGALRM);
   makecontext(&ENTRY_EXIT_CTX, __sched_exit_next, 0);
 
@@ -38,8 +38,8 @@ void __sched_init() {
 }
 
 void __sched_deinit() {
-  free(UCTX_P2STCK_P(&ENTRY_SCHED_CTX));
-  free(UCTX_P2STCK_P(&ENTRY_EXIT_CTX));
+  free(UCT_P2STCK_P(&ENTRY_SCHED_CTX));
+  free(UCT_P2STCK_P(&ENTRY_EXIT_CTX));
 }
 
 void __sched_interrupt_next() {
@@ -61,17 +61,24 @@ void __sched_exit_next() {
   exit(0);
 }
 
-void __sched_run_next(ucxt_p sched_ctx, const ucontext_t* next)
+void __sched_run_next(uctx_p sched_ctx, const uctx_p next)
 {
   ualarm(SWAP_INTERVAL, 0);
   swapcontext(sched_ctx, next);
+}
+
+void __sched_pthread_routine(
+    void *(*func) (void*),
+    void **rval,
+    void *args){
+  *rval = func(args);
 }
 
 ucontext_t* __sched_q_route()
 {
   static unsigned int num_iter = 0;
   int index = num_iter % (FREQ_HQ + FREQ_MQ + FREQ_LQ);
-  ucxt_p next = NULL;
+  uctx_p next = NULL;
   if (index < FREQ_HQ && !is_empty(QThreadH))
   {
     last_q_invoked = QTOP;
@@ -101,13 +108,6 @@ ucontext_t* __sched_q_route()
   }
 
   return next;
-}
-
-void __sched_pthread_routine(
-    void *(*func) (void*),
-    void **rval,
-    void *args){
-  *rval = func(args);
 }
 
 void __attribute__ ((constructor)) constructor () {

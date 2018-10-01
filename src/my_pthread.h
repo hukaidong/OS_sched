@@ -7,7 +7,7 @@
 #include "type.h"
 
 #define pthread_attr_t void
-#define pthread_t my_pthread_t
+#define pthread_t my_fiber_t
 
 #define pthread_create my_pthread_create
 // int pthread_create(
@@ -33,9 +33,9 @@ int my_pthread_join(pthread_t thread, void **retval);
 // int pthread_yield(void);
 int my_pthread_yield(void);
 
-#define EDEADLK 0
-#define EINVAL 1
-#define ESRCH 2
+#define EDEADLK 1
+#define EINVAL 2
+#define ESRCH 3
 
 #endif /* ifdef USE_MY_PTHREAD */
 

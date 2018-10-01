@@ -1,6 +1,8 @@
 #ifndef MY_PTHREAD_QUEUE_H
 #define MY_PTHREAD_QUEUE_H
 
+#include <stdbool.h>
+
 #define define_list(type) \
 struct _list_##type; \
 typedef struct \

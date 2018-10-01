@@ -5,9 +5,9 @@
 
 #include "src/my_pthread.h"
 
-#include "sched"
-#include "mutex"
-#include "my_pthread"
+#include "sched.c"
+#include "mutex.c"
+#include "my_pthread.c"
 
 #endif /* ifndef MY_PTHREAD_INCLUDE */
 

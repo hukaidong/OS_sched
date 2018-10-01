@@ -15,40 +15,40 @@
 int my_pthread_mutex_init(
     mutex_t *mutex, const pthread_mutexattr_t *attr) {
   mutex = (mutex_t *)malloc(sizeof(mutex_t));
-  mutex.locked = false;
-  mutex.pending = new_list(ucxt_p);
+  mutex->locked = false;
+  mutex->pending = new_list(uctx_p);
   return 0;
 }
 
 int my_pthread_mutex_lock(mutex_t *mutex) {
   sigrelse(SIGALRM);
-  while (mutex.locked) {
+  while (mutex->locked) {
     ucontext_t current;
-    push(mutex.pending, &current);
-    DETEACH_THREAD(current);
+    push(mutex->pending, &current);
+    DETEACH_THREAD(&current);
   }
-  mutex.locked = true;
+  mutex->locked = true;
   return 0;
 }
 
 int my_pthread_mutex_unlock(mutex_t *mutex) {
   sigrelse(SIGALRM);
-  mutex.locked = false;
-  if (!is_empty(mutex.pending)) {
-    ATTACH_THREAD(*pop(mutex.pending));
+  mutex->locked = false;
+  if (!is_empty(mutex->pending)) {
+    ATTACH_THREAD(pop(mutex->pending));
   }
   return 0;
 }
 
-int my_pthread_mutex_destory(mutex_t *mutex) {
+int my_pthread_mutex_destroy(mutex_t *mutex) {
   sigrelse(SIGALRM);
-  while (mutex.locked) {
+  while (mutex->locked) {
     ucontext_t current;
-    push(mutex.pending, &current);
-    DETEACH_THREAD(current);
+    push(mutex->pending, &current);
+    DETEACH_THREAD(&current);
   }
-  while (!is_empty(mutex.pending)) {
-    ATTACH_THREAD(*pop(mutex.pending));
+  while (!is_empty(mutex->pending)) {
+    ATTACH_THREAD(pop(mutex->pending));
   }
   free(mutex);
   return 0;

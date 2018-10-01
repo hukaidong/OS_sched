@@ -7,7 +7,6 @@
 define_list(int);
 
 int main(int argc, char* argv[]){
-
         List(int)* b = new_list(int);
         push(b,1);
         push(b,2);

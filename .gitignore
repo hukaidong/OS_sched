@@ -1,6 +1,7 @@
 # compiled file 
 my_pthread
 Benchmark/*
+!Benchmark/Makefile
 
 # Prerequisites
 *.d
