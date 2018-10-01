@@ -1,5 +1,6 @@
 # compiled file 
 my_pthread
+Benchmark/*
 
 # Prerequisites
 *.d
