@@ -37,11 +37,15 @@ void __sched_init() {
   swapcontext(&MAIN_CTX, &ENTRY_SCHED_CTX);
 }
 
+void __sched_deinit() {
+  free(UCTX_P2STCK_P(&ENTRY_SCHED_CTX));
+  free(UCTX_P2STCK_P(&ENTRY_EXIT_CTX));
+}
+
 void __sched_interrupt_next() {
   do {
     ucontext_t* next = __sched_q_route();
-    ualarm(SWAP_INTERVAL, 0);
-    swapcontext(&ENTRY_SCHED_CTX, next);
+    __sched_run_next(&ENTRY_SCHED_CTX, next);
   } while (1);
 }
 
@@ -51,15 +55,16 @@ void __sched_exit_next() {
   while (next)
   {
     sigrelse(SIGALRM);
-    __sched_run_next(next);
+    __sched_run_next(&ENTRY_EXIT_CTX, next);
+    next = __sched_q_route();
   }
   exit(0);
 }
 
-void __sched_run_next(ucxt_p curr, const ucontext_t* next)
+void __sched_run_next(ucxt_p sched_ctx, const ucontext_t* next)
 {
   ualarm(SWAP_INTERVAL, 0);
-  setcontext(next);
+  swapcontext(sched_ctx, next);
 }
 
 ucontext_t* __sched_q_route()
@@ -103,4 +108,12 @@ void __sched_pthread_routine(
     void **rval,
     void *args){
   *rval = func(args);
+}
+
+void __attribute__ ((constructor)) constructor () {
+  __sched_init();
+}
+
+void __attribute__ ((destructor)) destructor () {
+  __sched_deinit();
 }
