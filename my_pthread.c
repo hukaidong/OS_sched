@@ -11,10 +11,10 @@ int my_pthread_create(
 
   INIT_THREAD(thread);
   makecontext(
-      FIB_P2UCTX_P(thread), __sched_pthread_routine, 3,
-      start_routine, &(thread->rval), arg);
+      FIB_P2UCTX_P(*thread), __sched_pthread_routine, 3,
+      start_routine, &(((fib_p)*thread)->rval), arg);
 
-  push(QThreadH, &(thread[-1].uctx));
+  push(QThreadH, &(((fib_p)*thread)[-1].uctx));
 
   return 0;
 }
@@ -25,16 +25,16 @@ int my_pthread_yield(void) {
   return 0;
 }
 
-int my_pthread_join(my_fiber_t thread, void **retval){
-  while (thread.status != FIB_TERMINATED) {
-    if (thread.to_join != NULL) {
+int my_pthread_join(fib_p thread, void **retval){
+  while (thread->status != FIB_TERMINATED) {
+    if (thread->to_join != NULL) {
       // another thread is already waiting to join with this thread
       return EINVAL;
     }
     ucontext_t current;
     DETEACH_THREAD(&current);
   }
-  *retval = DESTROY_THREAD(FIB_P2UCTX_P(&thread));
+  *retval = DESTROY_THREAD(FIB_P2UCTX_P(thread));
   return 0;
 }
 

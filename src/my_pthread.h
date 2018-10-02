@@ -7,7 +7,7 @@
 #include "type.h"
 
 #define pthread_attr_t void
-#define pthread_t my_fiber_t
+#define pthread_t fib_p
 
 #define pthread_create my_pthread_create
 // int pthread_create(
