@@ -1,10 +1,13 @@
 #include "src/sched.h"
 
+#include <signal.h>
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <ucontext.h>
+
+#define UNUSED(x) (void)(x)
 
 // Frequency of queue serving
 #define FREQ_FLUSH 500
@@ -13,7 +16,7 @@
 #define FREQ_LQ 1
 
 // swap every 20 microsecond
-#define SWAP_INTERVAL 20
+#define SWAP_INTERVAL 2000 //20
 
 #define QTOP 0
 #define QMED 1
@@ -34,12 +37,27 @@ void __sched_init() {
   sigaddset(&(ENTRY_EXIT_CTX.uc_sigmask), SIGALRM);
   makecontext(&ENTRY_EXIT_CTX, __sched_exit_next, 0);
 
+  signal(SIGALRM, __sched_alarmed);
+  push(QThreadH, &MAIN_CTX);
   swapcontext(&MAIN_CTX, &ENTRY_SCHED_CTX);
 }
 
 void __sched_deinit() {
   free(UCT_P2STCK_P(&ENTRY_SCHED_CTX));
   free(UCT_P2STCK_P(&ENTRY_EXIT_CTX));
+}
+
+void __sched_alarmed(int signum) {
+  sigrelse(signum);
+  ucontext_t current;
+  _INIT_CTX(&current, &ENTRY_EXIT_CTX);
+  switch(last_q_invoked) {
+    // for future adapting more complex strategy
+    case QTOP: push(QThreadM, &current); break;
+    case QMED: push(QThreadL, &current); break;
+    default: push(QThreadL, &current); break;
+  }
+  swapcontext(&current, &ENTRY_SCHED_CTX);
 }
 
 void __sched_interrupt_next() {

@@ -4,7 +4,7 @@
 #include <signal.h>
 
 int my_pthread_create(
-    my_fiber_t *thread,
+    pthread_t  *thread,
     const pthread_attr_t *attr,
     void *(*start_routine) (void *),
     void *arg){

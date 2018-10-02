@@ -16,6 +16,7 @@ Quctx *QThreadH, *QThreadM, *QThreadL;
 
 int thread_detached = 0;
 void __sched_init();
+void __sched_alarmed(int);
 void __sched_interrupt_next();
 void __sched_exit_next();
 void __sched_run_next(uctx_p, const uctx_p);
@@ -33,11 +34,11 @@ _INIT_CTX(uctx_p ctx, const uctx_p link) {
 }
 
 inline void
-INIT_THREAD(my_pthread_t *fiber) {
+INIT_THREAD(fib_p *fiber) {
   thd_p thread = _NEW_THREAD();
   fib_p fib = &(thread->fiber);
+  void * stk = &(thread->stack);
   uctx_p ctx = FIB_P2UCTX_P(fib);
-  void * stk = FIB_P2STCK_P(fib);
 
   fib->status = FIB_RUNNING;
   fib->rval = NULL;
