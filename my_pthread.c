@@ -10,6 +10,7 @@ int my_pthread_create(
     void *(*start_routine) (void *),
     void *arg){
 
+  LOG(my_pthread_create);
   INIT_THREAD(thread);
   makecontext(
       FIB_P2UCTX_P(*thread), __sched_pthread_routine, 3,
@@ -21,12 +22,14 @@ int my_pthread_create(
 }
 
 int my_pthread_yield(void) {
+  LOG(my_pthread_yield);
   ucontext_t current;
   YIELD_THREAD(&current);
   return 0;
 }
 
 int my_pthread_join(fib_p thread, void **retval){
+  LOG(my_pthread_join);
   while (thread->status != FIB_TERMINATED) {
     if (thread->to_join != NULL) {
       // another thread is already waiting to join with this thread
@@ -43,6 +46,7 @@ int my_pthread_join(fib_p thread, void **retval){
 }
 
 void my_pthread_exit(void *retval) {
+  LOG(my_pthread_exit);
   ucontext_t current;
   getcontext(&current);
 

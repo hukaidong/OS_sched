@@ -4,7 +4,6 @@
 #include "src/type.h"
 #include "src/my_pthread.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <ucontext.h>
@@ -15,12 +14,14 @@
 
 int my_pthread_mutex_init(
     mutex_t *mutex, const pthread_mutexattr_t *attr) {
+  LOG(my_pthread_mutex_init);
   mutex->locked = false;
   mutex->pending = new_list(uctx_p);
   return 0;
 }
 
 int my_pthread_mutex_lock(mutex_t *mutex) {
+  LOG(my_pthread_mutex_lock);
   sigrelse(SIGALRM);
   while (mutex->locked) {
     ucontext_t current;
@@ -32,6 +33,7 @@ int my_pthread_mutex_lock(mutex_t *mutex) {
 }
 
 int my_pthread_mutex_unlock(mutex_t *mutex) {
+  LOG(my_pthread_mutex_unlock);
   sigrelse(SIGALRM);
   mutex->locked = false;
   if (!is_empty(mutex->pending)) {
@@ -41,6 +43,7 @@ int my_pthread_mutex_unlock(mutex_t *mutex) {
 }
 
 int my_pthread_mutex_destroy(mutex_t *mutex) {
+  LOG(my_pthread_mutex_destroy);
   sigrelse(SIGALRM);
   while (mutex->locked) {
     ucontext_t current;

@@ -29,6 +29,7 @@ ucontext_t* __sched_q_route();
 
 inline void
 _INIT_CTX(uctx_p ctx, const uctx_p link) {
+  LOG(_INIT_CTX);
   getcontext(ctx);
   ctx->uc_link = link;
   ctx->uc_stack.ss_sp = _NEW_STACK();
@@ -38,6 +39,7 @@ _INIT_CTX(uctx_p ctx, const uctx_p link) {
 
 inline void
 INIT_THREAD(fib_p *fiber) {
+  LOG(INIT_THREAD);
   thd_p thread = _NEW_THREAD();
   fib_p fib = &(thread->fiber);
   void * stk = &(thread->stack);
@@ -58,6 +60,7 @@ INIT_THREAD(fib_p *fiber) {
 
 inline void
 YIELD_THREAD(uctx_p current) {
+  LOG(YIELD_THREAD);
   _INIT_CTX(&current, &ENTRY_EXIT_CTX);
   push(QThreadH, &current);
   swapcontext(&current, &ENTRY_SCHED_CTX);
@@ -65,12 +68,14 @@ YIELD_THREAD(uctx_p current) {
 
 inline void
 DETEACH_THREAD(uctx_p current) {
+  LOG(DESTROY_THREAD);
   thread_detached++;
   swapcontext(current, &ENTRY_SCHED_CTX);
 }
 
 inline void
 ATTACH_THREAD(uctx_p attach) {
+  LOG(ATTACH_THREAD);
   thread_detached--;
   ucontext_t current;
   _INIT_CTX(&current, &ENTRY_EXIT_CTX);
@@ -81,6 +86,7 @@ ATTACH_THREAD(uctx_p attach) {
 
 inline void
 TERMINATE_THREAD(uctx_p current) {
+  LOG(TERMINATE_THREAD);
   EXIT_THD_P = UCT_P2STCK_P(current);
   fib_p fiber = UCTX_P2FIB_P(current);
   fiber->status = FIB_TERMINATED;
@@ -89,6 +95,7 @@ TERMINATE_THREAD(uctx_p current) {
 
 inline void *
 DESTROY_THREAD(uctx_p target) {
+  LOG("DESTROY_THREAD");
   fib_p fiber = UCTX_P2FIB_P(target);
   void *retval = fiber->rval;
   free(UCT_P2STCK_P(target));
