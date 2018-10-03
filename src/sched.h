@@ -20,11 +20,12 @@ void __sched_alarmed(int);
 void __sched_interrupt_next();
 void __sched_exit_next();
 void __sched_run_next(uctx_p, const uctx_p);
-void __sched_pthread_routine(void *(*func) (void*), void **rval, void *args);
+void __sched_pthread_routine(
+    void *(*) (void*), fib_p, void *);
 ucontext_t* __sched_q_route();
 
 
-inline void
+void
 _INIT_CTX(uctx_p ctx, const uctx_p link) {
   getcontext(ctx);
   ctx->uc_link = link;
@@ -33,7 +34,7 @@ _INIT_CTX(uctx_p ctx, const uctx_p link) {
   ctx->uc_stack.ss_flags = 0;
 }
 
-inline void
+void
 INIT_THREAD(fib_p *fiber) {
   thd_p thread = _NEW_THREAD();
   fib_p fib = &(thread->fiber);
@@ -53,30 +54,30 @@ INIT_THREAD(fib_p *fiber) {
   *fiber = fib;
 }
 
-inline void
+void
 YIELD_THREAD(uctx_p current) {
   _INIT_CTX(&current, &ENTRY_EXIT_CTX);
   push(QThreadH, &current);
   swapcontext(&current, &ENTRY_SCHED_CTX);
 }
 
-inline void
+void
 DETEACH_THREAD(uctx_p current) {
   thread_detached++;
-  swapcontext(&current, &ENTRY_SCHED_CTX);
+  swapcontext(current, &ENTRY_SCHED_CTX);
 }
 
-inline void
+void
 ATTACH_THREAD(uctx_p attach) {
   thread_detached--;
   ucontext_t current;
   _INIT_CTX(&current, &ENTRY_EXIT_CTX);
-  push(QThreadH, &attach);
   push(QThreadH, &current);
+  push(QThreadH, &attach);
   swapcontext(&current, &ENTRY_SCHED_CTX);
 }
 
-inline void
+void
 TERMINATE_THREAD(uctx_p current) {
   EXIT_THD_P = UCT_P2STCK_P(current);
   fib_p fiber = UCTX_P2FIB_P(current);
@@ -84,7 +85,7 @@ TERMINATE_THREAD(uctx_p current) {
   setcontext(&ENTRY_EXIT_CTX);
 }
 
-inline void *
+void *
 DESTROY_THREAD(uctx_p target) {
   fib_p fiber = UCTX_P2FIB_P(target);
   void *retval = fiber->rval;
@@ -92,7 +93,7 @@ DESTROY_THREAD(uctx_p target) {
   return retval;
 }
 
-inline bool IS_MAIN_CTX(uctx_p current)
-{ return UCT_P2STCK_P(&current) == UCT_P2STCK_P(&MAIN_CTX); }
+bool IS_MAIN_CTX(uctx_p current)
+{ return UCT_P2STCK_P(current) == UCT_P2STCK_P(&MAIN_CTX); }
 
 #endif /* ifndef MY_PTHREAD_SCHED_H */

@@ -16,7 +16,7 @@
 #define FREQ_LQ 1
 
 // swap every 20 microsecond
-#define SWAP_INTERVAL 2000 //20
+#define SWAP_INTERVAL 200000 //20
 
 #define QTOP 0
 #define QMED 1
@@ -69,12 +69,11 @@ void __sched_interrupt_next() {
 
 void __sched_exit_next() {
   // WARNING: DO NOT free memory here, free it when joined
-  ucontext_t* next = __sched_q_route();
-  while (next)
-  {
+  while (1) {
     sigrelse(SIGALRM);
+    ucontext_t* next = __sched_q_route();
+    if (next == NULL) { break; }
     __sched_run_next(&ENTRY_EXIT_CTX, next);
-    next = __sched_q_route();
   }
   exit(0);
 }
@@ -87,9 +86,13 @@ void __sched_run_next(uctx_p sched_ctx, const uctx_p next)
 
 void __sched_pthread_routine(
     void *(*func) (void*),
-    void **rval,
+    fib_p fib,
     void *args){
-  *rval = func(args);
+  fib->rval = func(args);
+  if (fib->to_join != NULL) {
+    ATTACH_THREAD(fib->to_join);
+  }
+  fib->status = FIB_TERMINATED;
 }
 
 ucontext_t* __sched_q_route()

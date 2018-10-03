@@ -14,7 +14,6 @@
 
 int my_pthread_mutex_init(
     mutex_t *mutex, const pthread_mutexattr_t *attr) {
-  mutex = (mutex_t *)malloc(sizeof(mutex_t));
   mutex->locked = false;
   mutex->pending = new_list(uctx_p);
   return 0;

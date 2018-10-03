@@ -12,9 +12,9 @@ int my_pthread_create(
   INIT_THREAD(thread);
   makecontext(
       FIB_P2UCTX_P(*thread), __sched_pthread_routine, 3,
-      start_routine, &(((fib_p)*thread)->rval), arg);
+      start_routine, (fib_p)*thread, arg);
 
-  push(QThreadH, &(((fib_p)*thread)[-1].uctx));
+  push(QThreadH, &(((fib_p)*thread)->uctx));
 
   return 0;
 }
@@ -32,6 +32,7 @@ int my_pthread_join(fib_p thread, void **retval){
       return EINVAL;
     }
     ucontext_t current;
+    thread->to_join = &current;
     DETEACH_THREAD(&current);
   }
   *retval = DESTROY_THREAD(FIB_P2UCTX_P(thread));
