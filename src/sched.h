@@ -14,7 +14,7 @@
 
 void *EXIT_THD_P;
 ucontext_t ENTRY_SCHED_CTX, ENTRY_EXIT_CTX, MAIN_CTX;
-Quctx *QThreadH, *QThreadM, *QThreadL;
+Quctx QThreadH, QThreadM, QThreadL;
 
 int thread_detached = 0;
 void __sched_init();
@@ -62,7 +62,7 @@ inline void
 YIELD_THREAD(uctx_p current) {
   LOG(YIELD_THREAD);
   _INIT_CTX(&current, &ENTRY_EXIT_CTX);
-  push(QThreadH, &current);
+  push(&QThreadH, &current);
   swapcontext(&current, &ENTRY_SCHED_CTX);
 }
 
@@ -79,8 +79,8 @@ ATTACH_THREAD(uctx_p attach) {
   thread_detached--;
   ucontext_t current;
   _INIT_CTX(&current, &ENTRY_EXIT_CTX);
-  push(QThreadH, attach);
-  push(QThreadH, &current);
+  push(&QThreadH, attach);
+  push(&QThreadH, &current);
   swapcontext(&current, &ENTRY_SCHED_CTX);
 }
 
@@ -95,7 +95,7 @@ TERMINATE_THREAD(uctx_p current) {
 
 inline void *
 DESTROY_THREAD(uctx_p target) {
-  LOG("DESTROY_THREAD");
+  LOG(DESTROY_THREAD);
   fib_p fiber = UCTX_P2FIB_P(target);
   void *retval = fiber->rval;
   free(UCT_P2STCK_P(target));

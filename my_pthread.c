@@ -16,7 +16,7 @@ int my_pthread_create(
       FIB_P2UCTX_P(*thread), __sched_pthread_routine, 3,
       start_routine, (fib_p)*thread, arg);
 
-  push(QThreadH, &(((fib_p)*thread)->uctx));
+  push(&QThreadH, &(((fib_p)*thread)->uctx));
 
   return 0;
 }

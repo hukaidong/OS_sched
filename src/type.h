@@ -8,11 +8,6 @@
 #define FIB_RUNNING 0
 #define FIB_TERMINATED 1
 
-#define Quctx List(uctx_p)
-
-typedef ucontext_t* uctx_p;
-define_list(uctx_p)
-
 typedef struct {
   char        member[16384];
 } my_stack_t;
@@ -35,7 +30,7 @@ typedef struct {
 typedef struct {
   // Memory allignment
   int     locked;
-  Quctx   *pending;
+  Quctx   pending;
 } my_pthread_mutex_t;
 
 inline void * UCT_P2STCK_P(uctx_p ctx)     { return ctx->uc_stack.ss_sp; }

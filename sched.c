@@ -28,9 +28,9 @@ uctx_p alarmed_ctx = NULL;
 
 
 void __sched_init() {
-  QThreadH = new_list(uctx_p);
-  QThreadM = new_list(uctx_p);
-  QThreadL = new_list(uctx_p);
+  q_init(&QThreadH);
+  q_init(&QThreadM);
+  q_init(&QThreadL);
 
   _INIT_CTX(&ENTRY_SCHED_CTX, NULL);
   sigaddset(&(ENTRY_SCHED_CTX.uc_sigmask), SIGALRM);
@@ -41,7 +41,7 @@ void __sched_init() {
   makecontext(&ENTRY_EXIT_CTX, __sched_exit_next, 0);
 
   signal(SIGALRM, __sched_alarmed);
-  push(QThreadH, &MAIN_CTX);
+  push(&QThreadH, &MAIN_CTX);
   swapcontext(&MAIN_CTX, &ENTRY_SCHED_CTX);
 }
 
@@ -65,9 +65,9 @@ void __sched_interrupt_next() {
       // malloc not save during signal handler
       switch(last_q_invoked) {
         // for future adapting more complex strategy
-        case QTOP: push(QThreadM, alarmed_ctx); break;
-        case QMED: push(QThreadL, alarmed_ctx); break;
-        default: push(QThreadL, alarmed_ctx); break;
+        case QTOP: push(&QThreadM, alarmed_ctx); break;
+        case QMED: push(&QThreadL, alarmed_ctx); break;
+        default: push(&QThreadL, alarmed_ctx); break;
       }
       alarmed_ctx = NULL;
     }
@@ -93,13 +93,13 @@ void __sched_run_next(uctx_p sched_ctx, const uctx_p next)
   LOG(__sched_run_next);
   switch (last_q_invoked) {
     case QTOP: ualarm(SWAP_INTERVAL_HQ, 0);
-               puts("H QUEUE TRIGGERED!");
+               /* puts("H QUEUE TRIGGERED!"); */
                break;
     case QMED: ualarm(SWAP_INTERVAL_MQ, 0);
-               puts("M QUEUE TRIGGERED!");
+               /* puts("M QUEUE TRIGGERED!"); */
                break;
     case QLOW: ualarm(SWAP_INTERVAL_LQ, 0);
-               puts("L QUEUE TRIGGERED!");
+               /* puts("L QUEUE TRIGGERED!"); */
                break;
   }
   swapcontext(sched_ctx, next);
@@ -123,31 +123,31 @@ ucontext_t* __sched_q_route()
   static unsigned int num_iter = 0;
   int index = num_iter % (FREQ_HQ + FREQ_MQ + FREQ_LQ);
   uctx_p next = NULL;
-  if (index < FREQ_HQ && !is_empty(QThreadH))
+  if (index < FREQ_HQ && !is_empty(&QThreadH))
   {
     last_q_invoked = QTOP;
-    next = pop(QThreadH);
+    next = pop(&QThreadH);
   }
-  else if (index < FREQ_HQ + FREQ_MQ && !is_empty(QThreadM))
+  else if (index < FREQ_HQ + FREQ_MQ && !is_empty(&QThreadM))
   {
     last_q_invoked = QMED;
-    next = pop(QThreadM);
+    next = pop(&QThreadM);
   }
-  else if (index < FREQ_HQ + FREQ_MQ + FREQ_LQ && !is_empty(QThreadL))
+  else if (index < FREQ_HQ + FREQ_MQ + FREQ_LQ && !is_empty(&QThreadL))
   {
     last_q_invoked = QLOW;
-    next = pop(QThreadL);
+    next = pop(&QThreadL);
   }
 
   num_iter++;
 
   if (num_iter % FREQ_FLUSH == 0)
   {
-    while(!is_empty(QThreadM)) {
-      push(QThreadH, pop(QThreadM));
+    while(!is_empty(&QThreadM)) {
+      push(&QThreadH, pop(&QThreadM));
     }
-    while(!is_empty(QThreadL)) {
-      push(QThreadH, pop(QThreadL));
+    while(!is_empty(&QThreadL)) {
+      push(&QThreadH, pop(&QThreadL));
     }
   }
 
