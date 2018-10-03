@@ -85,7 +85,8 @@ void __sched_exit_next() {
     if (next == NULL) { break; }
     __sched_run_next(&ENTRY_EXIT_CTX, next);
   }
-  exit(0);
+  //exit(0);
+  setcontext(&MAIN_CTX);
 }
 
 void __sched_run_next(uctx_p sched_ctx, const uctx_p next)
