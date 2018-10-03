@@ -4,6 +4,7 @@
 #include "src/type.h"
 #include "src/my_pthread.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <ucontext.h>
@@ -49,6 +50,5 @@ int my_pthread_mutex_destroy(mutex_t *mutex) {
   while (!is_empty(mutex->pending)) {
     ATTACH_THREAD(pop(mutex->pending));
   }
-  free(mutex);
   return 0;
 }

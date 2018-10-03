@@ -16,7 +16,9 @@
 #define FREQ_LQ 1
 
 // swap every 20 microsecond
-#define SWAP_INTERVAL 200000 //20
+#define SWAP_INTERVAL_HQ 20
+#define SWAP_INTERVAL_MQ 100
+#define SWAP_INTERVAL_LQ 500
 
 #define QTOP 0
 #define QMED 1
@@ -80,7 +82,17 @@ void __sched_exit_next() {
 
 void __sched_run_next(uctx_p sched_ctx, const uctx_p next)
 {
-  ualarm(SWAP_INTERVAL, 0);
+  switch (last_q_invoked) {
+    case QTOP: ualarm(SWAP_INTERVAL_HQ, 0);
+               puts("H QUEUE TRIGGERED!");
+               break;
+    case QMED: ualarm(SWAP_INTERVAL_MQ, 0);
+               puts("M QUEUE TRIGGERED!");
+               break;
+    case QLOW: ualarm(SWAP_INTERVAL_LQ, 0);
+               puts("L QUEUE TRIGGERED!");
+               break;
+  }
   swapcontext(sched_ctx, next);
 }
 

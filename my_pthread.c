@@ -1,5 +1,6 @@
 #include "src/my_pthread.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
 
@@ -35,7 +36,9 @@ int my_pthread_join(fib_p thread, void **retval){
     thread->to_join = &current;
     DETEACH_THREAD(&current);
   }
-  *retval = DESTROY_THREAD(FIB_P2UCTX_P(thread));
+  if (retval != NULL) {
+    *retval = DESTROY_THREAD(FIB_P2UCTX_P(thread));
+  }
   return 0;
 }
 

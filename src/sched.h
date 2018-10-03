@@ -4,6 +4,8 @@
 #include "type.h"
 #include "queue.h"
 
+#include <stdio.h>
+
 // size of each context stack
 #define _STACK_SIZE sizeof(my_stack_t)
 #define _THREAD_SIZE sizeof(my_thread_t)
@@ -25,7 +27,7 @@ void __sched_pthread_routine(
 ucontext_t* __sched_q_route();
 
 
-void
+inline void
 _INIT_CTX(uctx_p ctx, const uctx_p link) {
   getcontext(ctx);
   ctx->uc_link = link;
@@ -34,7 +36,7 @@ _INIT_CTX(uctx_p ctx, const uctx_p link) {
   ctx->uc_stack.ss_flags = 0;
 }
 
-void
+inline void
 INIT_THREAD(fib_p *fiber) {
   thd_p thread = _NEW_THREAD();
   fib_p fib = &(thread->fiber);
@@ -54,30 +56,30 @@ INIT_THREAD(fib_p *fiber) {
   *fiber = fib;
 }
 
-void
+inline void
 YIELD_THREAD(uctx_p current) {
   _INIT_CTX(&current, &ENTRY_EXIT_CTX);
   push(QThreadH, &current);
   swapcontext(&current, &ENTRY_SCHED_CTX);
 }
 
-void
+inline void
 DETEACH_THREAD(uctx_p current) {
   thread_detached++;
   swapcontext(current, &ENTRY_SCHED_CTX);
 }
 
-void
+inline void
 ATTACH_THREAD(uctx_p attach) {
   thread_detached--;
   ucontext_t current;
   _INIT_CTX(&current, &ENTRY_EXIT_CTX);
+  push(QThreadH, attach);
   push(QThreadH, &current);
-  push(QThreadH, &attach);
   swapcontext(&current, &ENTRY_SCHED_CTX);
 }
 
-void
+inline void
 TERMINATE_THREAD(uctx_p current) {
   EXIT_THD_P = UCT_P2STCK_P(current);
   fib_p fiber = UCTX_P2FIB_P(current);
@@ -85,7 +87,7 @@ TERMINATE_THREAD(uctx_p current) {
   setcontext(&ENTRY_EXIT_CTX);
 }
 
-void *
+inline void *
 DESTROY_THREAD(uctx_p target) {
   fib_p fiber = UCTX_P2FIB_P(target);
   void *retval = fiber->rval;
@@ -93,7 +95,7 @@ DESTROY_THREAD(uctx_p target) {
   return retval;
 }
 
-bool IS_MAIN_CTX(uctx_p current)
+inline bool IS_MAIN_CTX(uctx_p current)
 { return UCT_P2STCK_P(current) == UCT_P2STCK_P(&MAIN_CTX); }
 
 #endif /* ifndef MY_PTHREAD_SCHED_H */
