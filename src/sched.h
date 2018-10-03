@@ -77,11 +77,7 @@ inline void
 ATTACH_THREAD(uctx_p attach) {
   LOG(ATTACH_THREAD);
   thread_detached--;
-  ucontext_t current;
-  _INIT_CTX(&current, &ENTRY_EXIT_CTX);
   push(&QThreadH, attach);
-  push(&QThreadH, &current);
-  swapcontext(&current, &ENTRY_SCHED_CTX);
 }
 
 inline void

@@ -21,7 +21,6 @@ int my_pthread_mutex_init(
 
 int my_pthread_mutex_lock(mutex_t *mutex) {
   LOG(my_pthread_mutex_lock);
-  sigrelse(SIGALRM);
   while (mutex->locked) {
     ucontext_t current;
     push(&(mutex->pending), &current);
@@ -34,7 +33,6 @@ int my_pthread_mutex_lock(mutex_t *mutex) {
 
 int my_pthread_mutex_unlock(mutex_t *mutex) {
   LOG(my_pthread_mutex_unlock);
-  sigrelse(SIGALRM);
   mutex->locked = false;
   if (!is_empty(&(mutex->pending))) {
     ATTACH_THREAD(pop(&(mutex->pending)));
@@ -44,7 +42,6 @@ int my_pthread_mutex_unlock(mutex_t *mutex) {
 
 int my_pthread_mutex_destroy(mutex_t *mutex) {
   LOG(my_pthread_mutex_destroy);
-  sigrelse(SIGALRM);
   while (mutex->locked) {
     ucontext_t current;
     push(&(mutex->pending), &current);
