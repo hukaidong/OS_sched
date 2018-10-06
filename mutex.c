@@ -21,12 +21,11 @@ int my_pthread_mutex_init(
 }
 
 int my_pthread_mutex_lock(mutex_t *mutex) {
-  //LOG(my_pthread_mutex_lock);
   GML = 1;
   while (mutex->locked) {
+    // LOG(my_pthread_mutex_lock);
     ucontext_t current;
     push(&(mutex->pending), &current);
-    GML = 0;
     DETEACH_THREAD(&current);
     GML = 1;
   }
@@ -36,7 +35,7 @@ int my_pthread_mutex_lock(mutex_t *mutex) {
 }
 
 int my_pthread_mutex_unlock(mutex_t *mutex) {
-  //                    LOG(my_pthread_mutex_unlock);
+  // LOG(my_pthread_mutex_unlock);
   GML = 1;
   mutex->locked = false;
   if (!is_empty(&(mutex->pending))) {
@@ -47,12 +46,11 @@ int my_pthread_mutex_unlock(mutex_t *mutex) {
 }
 
 int my_pthread_mutex_destroy(mutex_t *mutex) {
-  //LOG(my_pthread_mutex_destroy);
   GML = 1;
+  LOG(my_pthread_mutex_destroy);
   while (mutex->locked) {
     ucontext_t current;
     push(&(mutex->pending), &current);
-    GML = 0;
     DETEACH_THREAD(&current);
     GML = 1;
   }

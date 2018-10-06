@@ -32,6 +32,7 @@ int my_pthread_join(fib_p thread, void **retval){
   LOG(my_pthread_join);
     if (thread->to_join != NULL) {
       // another thread is already waiting to join with this thread
+      LOG(EINVAL);
       return EINVAL;
     }
   while (thread->status != FIB_TERMINATED) {

@@ -2,7 +2,7 @@
 #define MY_PTHREAD_INCLUDE
 
 #define USE_MY_PTHREAD 1
- #define DEBUG
+// #define DEBUG
 
 #ifdef USE_MY_PTHREAD
 
