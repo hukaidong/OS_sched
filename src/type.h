@@ -38,4 +38,5 @@ inline void * FIB_P2STCK_P(fib_p fib)      { return UCT_P2STCK_P(&(fib->uctx)); 
 inline fib_p  UCTX_P2FIB_P(uctx_p ctx)     { return (fib_p)UCT_P2STCK_P(ctx); }
 inline uctx_p FIB_P2UCTX_P(fib_p fib)      { return &(fib->uctx); }
 
+volatile bool GML;
 #endif /* ifndef MY_PTHREAD_TYPE_H */

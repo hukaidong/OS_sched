@@ -53,6 +53,7 @@ void __sched_deinit() {
 void __sched_alarmed(int signum) {
   LOG(__sched_alarmed);
   sigrelse(SIGALRM);
+  if (GML) { ualarm(SWAP_INTERVAL_HQ, 0); return; }
   ucontext_t current;
   alarmed_ctx = &current;
   swapcontext(&current, &ENTRY_SCHED_CTX);
@@ -85,8 +86,7 @@ void __sched_exit_next() {
     if (next == NULL) { break; }
     __sched_run_next(&ENTRY_EXIT_CTX, next);
   }
-  //exit(0);
-  setcontext(&MAIN_CTX);
+ exit(0);
 }
 
 void __sched_run_next(uctx_p sched_ctx, const uctx_p next)

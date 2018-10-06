@@ -21,7 +21,7 @@ inline void q_init(Quctx *queue) {
 }
 
 inline bool is_empty(Quctx *queue) {
-  LOG(is_empty);
+  //LOG(is_empty);
   return queue->size == 0;
 }
 

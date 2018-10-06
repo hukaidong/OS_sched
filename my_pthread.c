@@ -30,11 +30,11 @@ int my_pthread_yield(void) {
 
 int my_pthread_join(fib_p thread, void **retval){
   LOG(my_pthread_join);
-  while (thread->status != FIB_TERMINATED) {
     if (thread->to_join != NULL) {
       // another thread is already waiting to join with this thread
       return EINVAL;
     }
+  while (thread->status != FIB_TERMINATED) {
     ucontext_t current;
     thread->to_join = &current;
     DETEACH_THREAD(&current);
