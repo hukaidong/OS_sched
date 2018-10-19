@@ -29,7 +29,7 @@ inline _struct_SEG_T *_btm_seg_from_page (
 void __page_init(_struct_PAGE_T *page) {
   page->next = (_struct_PAGE_T*)((char*)page + PAGE_SIZE);
   page->owner = 0;
-  page->flags |= BUFF_FREE;
+  page->flags &= ~BUFF_OWND;
 
   _struct_SEG_T *initseg = _top_seg_from_page(page);
   _struct_SEG_T *termseg = _btm_seg_from_page(page);
