@@ -1,6 +1,6 @@
 # compiled file 
-test/Benchmark/*
-!test/Benchmark/Makefile
+Benchmark/*
+!Benchmark/Makefile
 
 # Prerequisites
 *.d
