@@ -35,7 +35,7 @@ void __page_init(_struct_PAGE_T *page) {
   _struct_SEG_T *termseg = _btm_seg_from_page(page);
   initseg->pseg = initseg;
   initseg->nseg = termseg;
-  initseg->flags = BUFF_FREE;
+  initseg->flags = 0;
   termseg->pseg = initseg;
   termseg->nseg = termseg;
   initseg->flags = BUFF_TERM;
@@ -47,7 +47,7 @@ void __page_slice_segment(_struct_SEG_T *seg, size_t offset) {
   newseg->nseg = seg->nseg;
   newseg->pseg->nseg = newseg;
   newseg->nseg->pseg = newseg;
-  newseg->flags = BUFF_FREE;
+  newseg->flags = 0;
 }
 
 void __page_try_release(_struct_PAGE_T *page, _struct_PAGE_T page_bkp) {
@@ -86,7 +86,7 @@ void __buf_init () {
   _struct_PAGE_T* page = (_struct_PAGE_T*) __sys_buf;
   _struct_PAGE_T* page_end = (_struct_PAGE_T*) (__sys_buf + BUF_SIZE);
   while (1) {
-    page->flags = BUFF_FREE;
+    page->flags = 0;
     __page_init(page);
 
     if (page->next > page_end) { page->flags |= BUFF_TERM; break; }
