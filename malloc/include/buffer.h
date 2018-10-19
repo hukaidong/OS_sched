@@ -6,11 +6,9 @@
 typedef char _bits_FLAG_T;
 
 struct _struct_SEG_T;
-struct _struct_SEG_INF_T;
 #define SEG_T_SIZE sizeof(_struct_SEG_T)
 
 struct _struct_PAGE_T;
-struct _struct_PAGE_INF_T;
 #define PAGE_T_SIZE sizeof(_struct_PAGE_T)
 
 
