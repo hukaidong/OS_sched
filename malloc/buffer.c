@@ -50,11 +50,11 @@ void __page_slice_segment(_struct_SEG_T *seg, size_t offset) {
   newseg->flags = BUFF_FREE;
 }
 
-void __page_try_release(_struct_PAGE_T *page, _struct_PAGE_T *page_bkp) {
+void __page_try_release(_struct_PAGE_T *page, _struct_PAGE_T page_bkp) {
   if(page->head->nseg == _btm_seg_from_page(page)) {
     __page_init(page);
   } else {
-    *page = *page_bkp;
+    *page = page_bkp;
     page->head->nseg->pseg = page->head;
   }
 }
@@ -72,10 +72,14 @@ void __page_expand_malloc(_struct_PAGE_T *page, int size) {
   __page_slice_segment(page->head, size);
 }
 
-void __page_shrink(_struct_PAGE_T *page)
-
-
-
+void __page_shrink(_struct_PAGE_T *page) {
+  _struct_PAGE_T page_bkp = *page;
+  page->flags &= ~BUFF_TERM;
+  do {
+    __page_init(page);
+    page = page->next;
+  } while(page->next < page_bkp.next);
+  __page_try_release(page, page_bkp);
 }
 
 void __buf_init () {
