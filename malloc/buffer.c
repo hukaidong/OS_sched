@@ -1,8 +1,8 @@
 #include "include/buffer.h"
 
 struct _struct_SEG_T {
-  _struct_SEG_T *pseg;
-  _struct_SEG_T *nseg;
+  _struct_SEG_T *prev_seg;
+  _struct_SEG_T *next_seg;
   _bits_FLAG_T  flags;
   char buf[0];
 };
@@ -33,29 +33,29 @@ void __page_init(_struct_PAGE_T *page) {
 
   _struct_SEG_T *initseg = _top_seg_from_page(page);
   _struct_SEG_T *termseg = _btm_seg_from_page(page);
-  initseg->pseg = initseg;
-  initseg->nseg = termseg;
+  initseg->prev_seg = initseg;
+  initseg->next_seg = termseg;
   initseg->flags = 0;
-  termseg->pseg = initseg;
-  termseg->nseg = termseg;
+  termseg->prev_seg = initseg;
+  termseg->next_seg = termseg;
   initseg->flags = BUFF_TERM;
 }
 
 void __page_slice_segment(_struct_SEG_T *seg, size_t offset) {
   _struct_SEG_T *newseg = (_struct_SEG_T*)((char*)seg + offset);
-  newseg->pseg = seg;
-  newseg->nseg = seg->nseg;
-  newseg->pseg->nseg = newseg;
-  newseg->nseg->pseg = newseg;
+  newseg->prev_seg = seg;
+  newseg->next_seg = seg->next_seg;
+  newseg->prev_seg->next_seg = newseg;
+  newseg->next_seg->prev_seg = newseg;
   newseg->flags = 0;
 }
 
 void __page_try_release(_struct_PAGE_T *page, _struct_PAGE_T page_bkp) {
-  if(page->head->nseg == _btm_seg_from_page(page)) {
+  if(page->head->next_seg == _btm_seg_from_page(page)) {
     __page_init(page);
   } else {
     *page = page_bkp;
-    page->head->nseg->pseg = page->head;
+    page->head->next_seg->prev_seg = page->head;
   }
 }
 
