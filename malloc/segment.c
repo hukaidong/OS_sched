@@ -48,8 +48,8 @@ int seg_insert(seg_p seg, int size) {
     } else {
       new_seg->next_seg->prev_seg = new_seg;
     }
-
     return rest_space;
+
   } else {
     return 0;
   }
