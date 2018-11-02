@@ -7,4 +7,5 @@ void _UGLY_setup_virtual_mem() {
   posix_memalign(&vm_base, VM_SIZE, VM_SIZE);
 }
 
+void *new_page_from_free
 

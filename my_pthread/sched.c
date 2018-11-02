@@ -1,4 +1,4 @@
-#include "src/sched.h"
+#include "include/sched.h"
 
 #include <signal.h>
 #include <assert.h>
