@@ -22,8 +22,11 @@ void *new_page(int size_req, int thread_id) {
   //   return page_id2page(index_i) + sizeof(seghead)
 }
 
-void release_page(int pageid) {
-
+void release_page(int pageid, int thread_id) {
+  // if pageid not belongs to thread_id
+  //   page_swap_out(pageid);
+  //   page_swap_in_virtual(pageid, threadid);
+  // page[pageid].thread_id = -1;
 }
 
 void *page_id2page(int pageid) {
@@ -51,5 +54,12 @@ void page_swap_in(int index_i, int thread_id) {
   // pos = thread.file_swap.pop(index_i)
   // file_seg.push_back(pos)
   // swap_from_file(pos, index_i);
+  // mprotect(page_buf, pagesize, PROT_READ | PROT_WRITE);
+}
+
+void page_swap_in_virtual(int index_i, int thread_id) {
+  // swap page but not do memcpy (faster release page)
+  // pos = thread.file_swap.pop(index_i)
+  // file_seg.push_back(pos)
   // mprotect(page_buf, pagesize, PROT_READ | PROT_WRITE);
 }
