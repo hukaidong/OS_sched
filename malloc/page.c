@@ -37,5 +37,19 @@ void page_assign(int index_i, int thread_id) {
 }
 
 void page_swap_out(int index_i) {
+  // threadid = page[index_i].thread_id
+  // pos = file_seg.pop
+  // if not pos
+  //   pos = file_tail_pos
+  //   file_tail_pos++;
+  // swap_to_file(pos, index_i)
+  // thread.file_swap.push_back (index, pos)
+  // mprotect(page_buf, pagesize, PROT_NONE);
+}
 
+void page_swap_in(int index_i, int thread_id) {
+  // pos = thread.file_swap.pop(index_i)
+  // file_seg.push_back(pos)
+  // swap_from_file(pos, index_i);
+  // mprotect(page_buf, pagesize, PROT_READ | PROT_WRITE);
 }
