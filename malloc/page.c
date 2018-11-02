@@ -13,7 +13,8 @@ void *new_page(int size_req, int thread_id) {
   //     return NULL;
   //  (else:)
   //   thread's pagenum += req_page_num;
-  //   find new free page by page num as page_p
+  //   find new free page by page num as index_i
+  //   page_p = vm_base | (index_i << page_offset)
   //   maxfree = seg_init(page_p, req_page_num, sizq_req);
   //   page_p->thread_id = thread_id
   //   page_p->maxfree = maxfree
