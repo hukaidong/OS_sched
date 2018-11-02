@@ -15,11 +15,22 @@ void *myallocate(int size, char *fname,int lnum, char flags) {
   //    seg_insert(seg, size)
   return NULL;
 }
-void *mydeallocate(int size, char *fname, int lnum, char flags) {
+
+void mydeallocate(void* pointer, char *fname, int lnum, char flags) {
   UNUSED(fname);
   UNUSED(lnum);
   UNUSED(flags);
 
-  return NULL;
+  // get segheader from pointer
+  // segsize = segheader->size
+  // if (segsize + sizeof(seg) > mem per page)
+  //   split seg into {segpage, seglast}
+  //   release (n-1 pages)
+  // freesize = seg_free(seglast)
+  // if (freesize > segheaders->maxavail)
+  //   segheader->maxavail = freesize
+  //   if (freesize + sizeof(seg) = mem per page)
+  //   release (last page)
+
 }
 
