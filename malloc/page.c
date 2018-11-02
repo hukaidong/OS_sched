@@ -79,6 +79,10 @@ void page_segfault_handler (int sig, siginfo_t *si, void *_) {
   UNUSED(sig);
   UNUSED(_);
   void *addr = si->si_addr;
+  // thread_id = get_thread_id();
+  // int page_id = (addr & PAGE_MSK) >> PAGE_OFFSET;
+  // page_swap_out(pageid);
+  // page_svap_in(pageid, thread_id);
 
 
 }
