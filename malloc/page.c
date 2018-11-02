@@ -1,10 +1,21 @@
+#include <signal.h>
+
+
 #include "include/type.h"
 #include "include/page.h"
 #include "include/global.h"
+#include "include/my_malloc.h"
 
 
-void _UGLY_setup_virtual_mem() {
+void _page_setup() {
   posix_memalign(&vm_base, VM_SIZE, VM_SIZE);
+
+  struct sigaction sa;
+  sa.sa_flags = SA_SIGINFO;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_sigaction = page_segfault_handler;
+  sigaction(SIGSEGV, &sa, NULL);
+
 }
 
 void *new_page(int size_req, int thread_id) {
@@ -62,4 +73,12 @@ void page_swap_in_virtual(int index_i, int thread_id) {
   // pos = thread.file_swap.pop(index_i)
   // file_seg.push_back(pos)
   // mprotect(page_buf, pagesize, PROT_READ | PROT_WRITE);
+}
+
+void page_segfault_handler (int sig, siginfo_t *si, void *_) {
+  UNUSED(sig);
+  UNUSED(_);
+  void *addr = si->si_addr;
+
+
 }
