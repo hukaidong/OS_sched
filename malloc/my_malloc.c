@@ -8,22 +8,13 @@ void *myallocate(int size, char *fname,int lnum, char flags) {
   // get current thread id
   // get current page list
   // if (size + sizeof(seg) > mem per page)
-  //   if thread's pagenum + sizeof pages > PAGELIM
-  //      return NULL;
-  //   else
-  //      thread's pagenum += sizeof pages
-  //      alloc new page with desired size
+  //     return alloc new page with desired size
   // else foreach page belongs to thread id
   //   if (size < page->free_seg_max)
-  //    seg = seg_find_avail(page_base, size)
-  //    seg_insert(seg, size)
+  //     seg = seg_find_avail(page_base, size)
+  //     seg_insert(seg, size)
   // else /* no suitable page */
-  //   if thread's pagenum + 1 > PAGELIM
-  //     return null
-  //   else
-  //     alloc new page of size 1
-  //     thread's pagenum += 1
-  //     alloc page with desired size
+  //   return alloc page with desired size
   //
   return NULL;
 }

@@ -29,10 +29,9 @@ typedef struct segment_header {
 
 
 typedef struct page_entry {
-  void         *page_frame;
-  unsigned int  page_size;
+  unsigned int  thread_id;
   unsigned int  max_avail;
-} *page_p;
+} page_entry;
 
 #define MAX(a,b) ({ __typeof__ (a) _a = (a);\
     __typeof__ (b) _b = (b); _a > _b ? _a : _b; })

@@ -2,12 +2,14 @@
 #define MY_MALLOC_GLOBAL_H
 
 #include <unistd.h>
+#include "type.h"
 
 #define UNIT_MB 0x100000
 #define UNIT_KB 0x000400
 
 void *vm_base = NULL;
-int page_belongs[6*UNIT_KB/4];
+page_entry page_belongs[6*UNIT_KB/4];
+
 #define VM_SIZE (8*UNIT_MB)
 
 #define PAGE_MSK (1*UNIT_MB-4*UNIT_KB)
