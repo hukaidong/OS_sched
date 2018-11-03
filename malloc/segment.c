@@ -81,7 +81,9 @@ int seg_find_preceeding_max_size(seg_p seg) {
 }
 
 // return max size of segment available around freed seg
-int seg_free(seg_p seg) {
+int seg_free(void *p) {
+  seg_p seg = (seg_p) p;
+  ABSOLUTE_MOVE(seg, -sizeof(segment_header));
   FLAG_SET(seg->flags, SEG_AVIL_FMSK);
   seg_p free_seg_head = seg;
   if (seg->prev_seg != NULL &&
