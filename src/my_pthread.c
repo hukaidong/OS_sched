@@ -1,4 +1,7 @@
-#include "include/my_pthread.h"
+#include "my_pthread.h"
+#include "pthread/sched.h"
+#include "pthread/queue.h"
+#include "utils/utils.h"
 
 #include <stdio.h>
 #include <stdlib.h>

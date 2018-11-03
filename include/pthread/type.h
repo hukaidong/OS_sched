@@ -9,13 +9,6 @@
 
 #include <unistd.h>
 
-#ifdef DEBUG
-#include <stdio.h>
-#define LOG(str) puts(#str)
-#else
-#define LOG(str) (void*)0
-#endif /* ifdef DEBUG */
-
 #define MAX_Q_SIZE 20
 typedef ucontext_t* uctx_p;
 
@@ -62,6 +55,6 @@ inline long int GetCurrentThreadId() {
   return (long int)(UCT_P2STCK_P(current_ctx)) & ((~0ull) >> 1);
 }
 
-volatile bool GML;
+volatile int GML;
 
 #endif /* ifndef MY_PTHREAD_TYPE_H */

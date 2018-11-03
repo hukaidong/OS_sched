@@ -1,4 +1,5 @@
-#include "include/sched.h"
+#include "pthread/sched.h"
+#include "utils/utils.h"
 
 #include <signal.h>
 #include <assert.h>

@@ -1,8 +1,8 @@
-#include "include/mutex.h"
-#include "include/sched.h"
-#include "include/queue.h"
-#include "include/type.h"
-#include "include/my_pthread.h"
+#include "my_pthread.h"
+
+#include "pthread/sched.h"
+#include "pthread/queue.h"
+#include "pthread/type.h"
 
 #include <stdlib.h>
 #include <signal.h>

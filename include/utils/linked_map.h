@@ -1,3 +1,5 @@
+#ifndef MY_LINKED_MAP_H
+#define MY_LINKED_MAP_H value
 #include "include/type.h"
 #include "include/my_malloc.h"
 
@@ -23,3 +25,4 @@ int pop(node_p &head, int key, int &val){
   }
   return -1;
 }
+#endif /* ifndef MY_LINKED_MAP_H */

@@ -1,11 +1,13 @@
 #include <signal.h>
 
 
-#include "include/type.h"
-#include "include/page.h"
-#include "include/global.h"
-#include "include/my_malloc.h"
-#include "include/segment.h"
+#include "my_malloc.h"
+
+#include "malloc/type.h"
+#include "malloc/page.h"
+#include "malloc/global.h"
+#include "malloc/segment.h"
+
 
 
 void _page_setup() {
@@ -33,7 +35,7 @@ void *new_page(int size_req, int thread_id) {
   //     return NULL;
   //  (else:)
   else{
-    
+
   }
   //   thread's pagenum += req_page_num;
   //   if find new free page by page num as index_i
@@ -85,7 +87,7 @@ void page_swap_out(int index_i) {
 
 void page_swap_in(int index_i, int thread_id) {
   // pos = thread.file_swap.pop(index_i)
-  
+
   // file_seg.push_back(pos)
   // swap_from_file(pos, index_i);
   // mprotect(page_buf, pagesize, PROT_READ | PROT_WRITE);

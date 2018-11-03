@@ -1,9 +1,10 @@
-#include "include/global.h"
-#include "include/segment.h"
-#include "include/my_malloc.h"
+#include "my_malloc.h"
+#include "malloc/global.h"
+#include "malloc/segment.h"
+#include "utils/utils.h"
 
 
-void *myallocate(int size, char *fname,int lnum, char flags) {
+void *myallocate(int size, const char *fname,int lnum, char flags) {
   UNUSED(fname);
   UNUSED(lnum);
   if (flags & LIBRARYREQ) {
@@ -30,10 +31,9 @@ void *myallocate(int size, char *fname,int lnum, char flags) {
   return NULL;
 }
 
-void mydeallocate(void* pointer, char *fname, int lnum, char flags) {
+void mydeallocate(void* pointer, const char *fname, int lnum, char flags) {
   UNUSED(fname);
   UNUSED(lnum);
-  UNUSED(flags);
 
   if (flags & (LIBRARYREQ | SHAREDREQ)) {
     seg_free(pointer);
