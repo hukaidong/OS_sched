@@ -25,7 +25,7 @@ typedef struct segment_header {
   segment_header *next_seg;
   unsigned int    flags;
   char            buf[0];
-} *seg_p;
+} segment_header, *seg_p;
 
 
 typedef struct page_entry {
@@ -39,6 +39,11 @@ typedef struct node{
     node *next;
 }node, *node_p;
 
+typedef struct node2{
+  int key;
+  node *head;
+  node2 *next;
+}node2, *node2_p;
 
 #define MAX(a,b) ({ __typeof__ (a) _a = (a);\
     __typeof__ (b) _b = (b); _a > _b ? _a : _b; })
