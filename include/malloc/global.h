@@ -7,6 +7,8 @@
 #define UNIT_MB 0x100000
 #define UNIT_KB 0x000400
 
+void *static_head = NULL;
+
 void *vm_base = NULL,
      *shared_vm_base,
      *sys_vm_base;
