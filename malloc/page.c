@@ -26,9 +26,15 @@ void _page_setup() {
 
 void *new_page(int size_req, int thread_id) {
   //   int req_page_num = (size_req + sizeof(segment_header)) / PAGE_SIZE + 1;
+  int req_page_num = (size_req + sizeof(segment_header)) / PAGE_SIZE + 1;
   //   if thread's pagenum + req_page_num > PAGELIM
+  if(req_page_num > page_size)
+    return NULL;
   //     return NULL;
   //  (else:)
+  else{
+    
+  }
   //   thread's pagenum += req_page_num;
   //   if find new free page by page num as index_i
   //   else find new page by swap out page owned by other thread
@@ -41,6 +47,11 @@ void *new_page(int size_req, int thread_id) {
 
 void release_page(int pageid, int thread_id) {
   // if pageid not belongs to thread_id
+  if(page_belongs[pageid].thread_id!= thread_id){
+    page_swap_out(pageid);
+    page_swap_in_virtual(pageid,thread_id);
+    page_belongs[pageid].thread_id = -1;
+  }
   //   page_swap_out(pageid);
   //   page_swap_in_virtual(pageid, threadid);
   // page[pageid].thread_id = -1;
@@ -48,16 +59,21 @@ void release_page(int pageid, int thread_id) {
 
 void *page_id2page(int pageid) {
   // return vm_base | pageid << PAGE_MASK_OFFSET;
+  return vm_base | pageid << PAGE_OFST;
 }
 
 void page_assign(int index_i, int thread_id) {
   // page[i].thread_id = thread_id
+  page_belongs[index_i].thread_id = thread_id;
   // page[i].maxfree = 0
+  page_belongs[index_i].max_avail = 0;
   // mprotect(page_buf, pagesize, PROT_READ | PROT_WRITE);
+  mprotect(__sys_buf,page_belongs[index_i].page_size, PROT_READ | PROT_WRITE);
 }
 
 void page_swap_out(int index_i) {
   // threadid = page[index_i].thread_id
+  int threadid = page_belongs[index_i].thread_id;
   // pos = file_seg.pop
   // if not pos
   //   pos = file_tail_pos
@@ -69,6 +85,7 @@ void page_swap_out(int index_i) {
 
 void page_swap_in(int index_i, int thread_id) {
   // pos = thread.file_swap.pop(index_i)
+  
   // file_seg.push_back(pos)
   // swap_from_file(pos, index_i);
   // mprotect(page_buf, pagesize, PROT_READ | PROT_WRITE);

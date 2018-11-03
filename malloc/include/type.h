@@ -33,6 +33,13 @@ typedef struct page_entry {
   unsigned int  max_avail;
 } page_entry;
 
+typedef struct Node{
+    int k;
+    int v;
+    struct Node * next;
+}Node;
+
+
 #define MAX(a,b) ({ __typeof__ (a) _a = (a);\
     __typeof__ (b) _b = (b); _a > _b ? _a : _b; })
 
