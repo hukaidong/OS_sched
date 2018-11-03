@@ -5,10 +5,16 @@
 #include "include/page.h"
 #include "include/global.h"
 #include "include/my_malloc.h"
+#include "include/segment.h"
 
 
 void _page_setup() {
   posix_memalign(&vm_base, VM_SIZE, VM_SIZE);
+  sys_vm_base = (char*)vm_base + (6*UNIT_MB);
+  shared_vm_base = (char*)vm_base +(8*UNIT_MB) - (16*UNIT_KB);
+  sys_seg_init(sys_vm_base, shared_vm_base);
+  sys_seg_init(shared_vm_base, (char*)vm_base+VM_SIZE);
+
 
   struct sigaction sa;
   sa.sa_flags = SA_SIGINFO;

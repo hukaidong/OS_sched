@@ -1,6 +1,6 @@
 
 #define LIBRARYREQ 0x01
-#define THREADREQ ~LIBRARYREQ
+#define THREADREQ 0x02
 
 
 #define malloc(x) myallocate(x, __FILE__, __LINE__, THREADREQ)

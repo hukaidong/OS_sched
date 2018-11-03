@@ -2,6 +2,16 @@
 #include "include/segment.h"
 
 // return max size of segment available
+void sys_seg_init(void *pte, void *pte_end ) {
+  seg_p seg = (seg_p) pte;
+  seg->prev_seg = NULL;
+  seg->next_seg = (seg_p)pte_end;
+  seg->flags = 0;
+
+  FLAG_SET(seg->flags, SEG_AVIL_FMSK|SEG_TERM_FMSK);
+}
+
+// return max size of segment available
 int seg_init(void *pte, int page_num, int size_req) {
   seg_p seg = (seg_p) pte;
   seg->prev_seg = NULL;

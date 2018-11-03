@@ -1,6 +1,7 @@
 #include "type.h"
 
 int seg_init(void *pte, int page_num, int size_req);
+void sys_seg_init(void *pte, void *ptn_end);
 int seg_insert(seg_p seg, int size);
 int seg_free(seg_p seg);
 int seg_find_preceeding_max_size(seg_p seg);
