@@ -10,8 +10,10 @@
 #define _lib_malloc(x) myallocate(x, __FILE__, __LINE__, LIBRARYREQ)
 #define _lib_free(x) mydeallocate(x, __FILE__, __LINE__, LIBRARYREQ)
 
+#define shalloc(x) myallocate(x, __FILE__, __LINE__, SHAREDREQ)
+
 #define UNUSED(x) (void)(x)
 #define NULL 0
 
-void *myallocate(int size, char *fname,int lnum, char flags);
-void *mydeallocate(int size, char *fname, int line, char flags);
+void *myallocate(int size, const char *fname,int lnum, char flags);
+void *mydeallocate(void *pointer, const char *fname, int line, char flags);
