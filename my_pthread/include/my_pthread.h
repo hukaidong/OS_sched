@@ -4,6 +4,7 @@
 #ifdef USE_MY_PTHREAD
 #define _XOPEN_SOURCE  // OSX compatibility
 
+
 #include "type.h"
 
 #define pthread_attr_t void

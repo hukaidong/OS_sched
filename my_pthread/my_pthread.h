@@ -6,15 +6,6 @@
 
 #ifdef USE_MY_PTHREAD
 
-#ifdef DEBUG
-#include <stdio.h>
-#define LOG(str) puts(#str)
-#else
-#define LOG(str) (void*)0
-#endif /* ifdef DEBUG */
-
-
-
 #include "include/my_pthread.h"
 
 #include "sched.c"

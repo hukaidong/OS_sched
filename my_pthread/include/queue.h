@@ -4,16 +4,6 @@
 #include <stdbool.h>
 #include "type.h"
 
-#define MAX_Q_SIZE 20
-
-typedef ucontext_t* uctx_p;
-
-typedef struct {
-  uctx_p  uctx[MAX_Q_SIZE];
-  int head;
-  int size;
-} Quctx;
-
 inline void q_init(Quctx *queue) {
   LOG(q_init);
   queue->head = 0;
