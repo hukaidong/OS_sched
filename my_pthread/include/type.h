@@ -37,6 +37,7 @@ inline void * UCT_P2STCK_P(uctx_p ctx)     { return ctx->uc_stack.ss_sp; }
 inline void * FIB_P2STCK_P(fib_p fib)      { return UCT_P2STCK_P(&(fib->uctx)); }
 inline fib_p  UCTX_P2FIB_P(uctx_p ctx)     { return (fib_p)UCT_P2STCK_P(ctx); }
 inline uctx_p FIB_P2UCTX_P(fib_p fib)      { return &(fib->uctx); }
+uctx_p current_ctx = NULL;
 
 volatile bool GML;
 #endif /* ifndef MY_PTHREAD_TYPE_H */

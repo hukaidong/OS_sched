@@ -24,7 +24,6 @@
 #define QMED 1
 #define QLOW 2
 int last_q_invoked = QTOP;
-uctx_p alarmed_ctx = NULL;
 
 
 void __sched_init() {
@@ -55,7 +54,6 @@ void __sched_alarmed(int signum) {
   sigrelse(SIGALRM);
   if (GML) { ualarm(SWAP_INTERVAL_HQ, 0); return; }
   ucontext_t current;
-  alarmed_ctx = &current;
   swapcontext(&current, &ENTRY_SCHED_CTX);
 }
 
@@ -63,15 +61,14 @@ void __sched_interrupt_next() {
   do {
     GML = 1;
     // LOG(__sched_interrupt_next);
-    if (alarmed_ctx != NULL) {
+    if (current_ctx != NULL) {
       // malloc not save during signal handler
       switch(last_q_invoked) {
         // for future adapting more complex strategy
-        case QTOP: push(&QThreadM, alarmed_ctx); break;
-        case QMED: push(&QThreadL, alarmed_ctx); break;
-        default: push(&QThreadL, alarmed_ctx); break;
+        case QTOP: push(&QThreadM, current_ctx); break;
+        case QMED: push(&QThreadL, current_ctx); break;
+        default: push(&QThreadL, current_ctx); break;
       }
-      alarmed_ctx = NULL;
     }
     ucontext_t* next = __sched_q_route();
     __sched_run_next(&ENTRY_SCHED_CTX, next);
@@ -107,6 +104,7 @@ void __sched_run_next(uctx_p sched_ctx, const uctx_p next)
                break;
   }
   GML = 0;
+  current_ctx = next;
   swapcontext(sched_ctx, next);
 }
 
