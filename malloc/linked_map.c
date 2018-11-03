@@ -18,7 +18,7 @@ int pop(node_p &head, int key, int &val){
       _lib_free(current);
       return 1;
     }
-    last = &current;
+    last = &current->next;
     current = current->next;
   }
   return -1;
