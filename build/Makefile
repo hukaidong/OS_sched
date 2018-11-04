@@ -3,11 +3,11 @@ AR = ar rcs
 IDIR = ../include
 SDIR = ../src
 TDIR = ../test
-CFLAGS := -I$(IDIR) 
+CFLAGS := -I$(IDIR) -Wfatal-errors -g -Wall
 SRCS := $(wildcard $(SDIR)/**.c)
 TRCS := $(wildcard $(TDIR)/**.c)
-OBJECTS := $(SRCS:.c=.o)
-TESTS := $(notdir $(TRCS:.c=.out))
+OBJECTS := $(notdir $(SRCS:.c=.o))
+TESTS := $(notdir $(TRCS:.c=.test))
 
 PROJECTS := libpthread.a
 
@@ -17,13 +17,13 @@ all: $(PROJECTS)
 libpthread.a: $(OBJECTS)
 	$(AR) $@ $^
 	
-%.o: %.c
-	$(CC) -o $@ $(CFLAGS) $<
+%.o: $(SDIR)/%.c
+	$(CC) -o $@ $(CFLAGS) $< -c
 
 
 .PHONY: test
 test: $(TESTS)
 
-%.out: $(TDIR)/%.c
+%.test: $(TDIR)/%.c
 	$(CC) -o $@ $(CFLAGS) $<
 

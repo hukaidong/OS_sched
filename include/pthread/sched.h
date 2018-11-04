@@ -3,14 +3,15 @@
 
 #include "type.h"
 #include "queue.h"
+#include "my_malloc.h"
 
 #include <stdio.h>
 
 // size of each context stack
 #define _STACK_SIZE sizeof(my_stack_t)
 #define _THREAD_SIZE sizeof(my_thread_t)
-#define _NEW_STACK() malloc(_STACK_SIZE)
-#define _NEW_THREAD() malloc(_THREAD_SIZE)
+#define _NEW_STACK() _lib_malloc(_STACK_SIZE)
+#define _NEW_THREAD() _lib_malloc(_THREAD_SIZE)
 
 void *EXIT_THD_P;
 ucontext_t ENTRY_SCHED_CTX, ENTRY_EXIT_CTX, MAIN_CTX;
@@ -61,9 +62,9 @@ INIT_THREAD(fib_p *fiber) {
 inline void
 YIELD_THREAD(uctx_p current) {
   LOG(YIELD_THREAD);
-  _INIT_CTX(&current, &ENTRY_EXIT_CTX);
-  push(&QThreadH, &current);
-  swapcontext(&current, &ENTRY_SCHED_CTX);
+  _INIT_CTX(current, &ENTRY_EXIT_CTX);
+  push(&QThreadH, current);
+  swapcontext(current, &ENTRY_SCHED_CTX);
 }
 
 inline void

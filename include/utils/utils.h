@@ -9,7 +9,7 @@
 #include <stdio.h>
 #define LOG(str) puts(#str)
 #else
-#define LOG(str) (void*)0
+#define LOG(str)
 #endif /* ifdef DEBUG */
 
 #endif /* ifndef MY_UTIL_H */

@@ -1,6 +1,7 @@
 #ifndef MY_PTHREAD_PTHREAD_H
 #define MY_PTHREAD_PTHREAD_H
 
+#define USE_MY_PTHREAD
 #ifdef USE_MY_PTHREAD
 #define _XOPEN_SOURCE  // OSX compatibility
 

@@ -4,7 +4,6 @@
 #include "pthread/queue.h"
 #include "pthread/type.h"
 
-#include <stdlib.h>
 #include <signal.h>
 #include <ucontext.h>
 

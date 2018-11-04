@@ -4,10 +4,15 @@
 #ifdef __APPLE__
 #include <sys/ucontext.h>
 #else
+#define _GNU_SOURCE
+#include <signal.h>
 #include <ucontext.h>
 #endif
 
+/* unistd.h must be under ucontext.h */
 #include <unistd.h>
+
+
 
 #define MAX_Q_SIZE 20
 typedef ucontext_t* uctx_p;

@@ -2,10 +2,8 @@
 #include "pthread/sched.h"
 #include "pthread/queue.h"
 #include "utils/utils.h"
+#include "my_malloc.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
 
 int my_pthread_create(
     pthread_t  *thread,
@@ -14,9 +12,9 @@ int my_pthread_create(
     void *arg){
 
   LOG(my_pthread_create);
-  INIT_THREAD(thread);
+  INIT_THREAD(*thread);
   makecontext(
-      FIB_P2UCTX_P(*thread), __sched_pthread_routine, 3,
+      FIB_P2UCTX_P(**thread), __sched_pthread_routine, 3,
       start_routine, (fib_p)*thread, arg);
 
   push(&QThreadH, &(((fib_p)*thread)->uctx));
@@ -31,20 +29,20 @@ int my_pthread_yield(void) {
   return 0;
 }
 
-int my_pthread_join(fib_p thread, void **retval){
+int my_pthread_join(pthread_t thread, void **retval){
   LOG(my_pthread_join);
-    if (thread->to_join != NULL) {
+    if ((*thread)->to_join != NULL) {
       // another thread is already waiting to join with this thread
       LOG(EINVAL);
       return EINVAL;
     }
-  while (thread->status != FIB_TERMINATED) {
+  while ((*thread)->status != FIB_TERMINATED) {
     ucontext_t current;
-    thread->to_join = &current;
+    (*thread)->to_join = &current;
     DETEACH_THREAD(&current);
   }
   if (retval != NULL) {
-    *retval = DESTROY_THREAD(FIB_P2UCTX_P(thread));
+    *retval = DESTROY_THREAD(FIB_P2UCTX_P(*thread));
   }
   return 0;
 }
