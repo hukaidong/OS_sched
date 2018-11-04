@@ -23,8 +23,9 @@ typedef long int thread_id;
 typedef unsigned int page_idx, fswap_idx;
 
 define_lmap(file_seg_t, page_idx, fswap_idx);
-define_lmap(thr_de_t, thread_id, thread_entry);
+define_lmap(thread_entry_map, thread_id, thread_entry);
 lm_head_t(file_seg_t) file_seg;
+lm_head_t(thread_entry_map) thread_seg;
 
 page_idx pointer_2_page_index(void *p)
 { return ((unsigned long int)(p) & PAGE_MSK) >> PAGE_OFFSET; }

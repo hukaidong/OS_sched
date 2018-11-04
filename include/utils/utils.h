@@ -7,6 +7,10 @@
 #define NULL 0
 #endif
 
+#ifndef ssize_t
+#define ssize_t long int
+#endif
+
 #ifdef DEBUG
 #include <stdio.h>
 #define LOG(str) puts(#str)

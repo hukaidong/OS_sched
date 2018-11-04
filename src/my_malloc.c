@@ -1,6 +1,7 @@
 #include "my_malloc.h"
 #include "malloc/global.h"
 #include "malloc/segment.h"
+#include "pthread/type.h"
 #include "utils/utils.h"
 
 
@@ -16,7 +17,7 @@ void *myallocate(int size, const char *fname,int lnum, char flags) {
     seg_insert(seg, size);
     return seg->buf;
   } else {
-  // get current thread id
+    long int thread_id = GetCurrentThreadId();
   // get current page list
   // if (size + sizeof(seg) > mem per page)
   //     return alloc new page with desired size
