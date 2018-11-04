@@ -27,13 +27,15 @@ void _page_setup() {
 void *new_page(int size_req, int thread_id) {
   //   int req_page_num = (size_req + sizeof(segment_header)) / PAGE_SIZE + 1;
   int req_page_num = (size_req + sizeof(segment_header)) / PAGE_SIZE + 1;
+  int pagenum = get_page_num(static_head,thread_id);
   //   if thread's pagenum + req_page_num > PAGELIM
-  if(req_page_num > page_size)
+  if(pagenum+req_page_num > PAGE_SIZE)
     return NULL;
   //     return NULL;
   //  (else:)
   else{
-    
+  init_page_num(static_head,thread_id,req_page_num);
+
   }
   //   thread's pagenum += req_page_num;
   //   if find new free page by page num as index_i
@@ -74,19 +76,33 @@ void page_assign(int index_i, int thread_id) {
 void page_swap_out(int index_i) {
   // threadid = page[index_i].thread_id
   int threadid = page_belongs[index_i].thread_id;
+  node* head =  find_head(static_head,threadid);
   // pos = file_seg.pop
-  // if not pos
+  int pos ;
+  int result = pop(head, threadid,  pos);
+
+    // if not pos
   //   pos = file_tail_pos
   //   file_tail_pos++;
-  // swap_to_file(pos, index_i)
+
+if(result == -1){
+  pos = file_tail_pos;
+  file_tail_pos++;
+}
+
+  // swap_to_file(pos, index_i)   //need 16MB
+
   // thread.file_swap.push_back (index, pos)
   // mprotect(page_buf, pagesize, PROT_NONE);
 }
 
 void page_swap_in(int index_i, int thread_id) {
+  int pos;
   // pos = thread.file_swap.pop(index_i)
-  
+  node* head = find_head(static_head,thread_id);
+  pop(head,thread_id,pos);
   // file_seg.push_back(pos)
+  insert(head, thread_id, pos);
   // swap_from_file(pos, index_i);
   // mprotect(page_buf, pagesize, PROT_READ | PROT_WRITE);
 }
@@ -103,9 +119,13 @@ void page_segfault_handler (int sig, siginfo_t *si, void *_) {
   UNUSED(_);
   void *addr = si->si_addr;
   // thread_id = get_thread_id();
+  int cur_threadid = GetCurrentThreadId();
   // int page_id = (addr & PAGE_MSK) >> PAGE_OFFSET;
+  int page_id = (addr & PAGE_MSK) >> PAGE_OFFSET;
   // page_swap_out(pageid);
+  page_swap_out(page_id);
   // page_svap_in(pageid, thread_id);
+  page_swap_in(page_id, cur_threadid);
 
 
 }

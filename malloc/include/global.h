@@ -25,4 +25,6 @@ unsigned int pointer_2_page_index(void *p)
 void *page_index_2_base(unsigned int idx)
 { return (char *)vm_base + ((unsigned long int)idx << PAGE_OFFSET); }
 
+int file_tail_pos = 0;
+
 #endif /* ifndef MY_MALLOC_GLOBAL_H */

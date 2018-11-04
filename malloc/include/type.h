@@ -41,6 +41,7 @@ typedef struct node{
 
 typedef struct node2{
   int key;
+  int page_num;
   node *head;
   node2 *next;
 }node2, *node2_p;

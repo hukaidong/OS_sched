@@ -6,6 +6,13 @@
 void *myallocate(int size, char *fname,int lnum, char flags) {
   UNUSED(fname);
   UNUSED(lnum);
+  //pairs key as threadid value as head pointer
+  if(iscontainskey == -1){
+    int cur_threadid = GetCurrentThreadId();
+    node *head = NULL;
+    insert_key2head(static_head,cur_threadid,head);
+  }
+
   if (flags & LIBRARYREQ) {
     seg_p seg = seg_find_avail(sys_vm_base, size);
     seg_insert(seg, size);

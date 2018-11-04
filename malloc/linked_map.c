@@ -3,8 +3,8 @@
 
 void insert(node_p &head_ref, int key, int val){
   node_p new_node = (node_p)_lib_malloc(sizeof(node));
-  new_node->key = key;
-  new_node->val = val;
+  new_node->key = key;    //thread
+  new_node->val = val;    //file position
   new_node->next = head_ref;
   head_ref = new_node;
 }
