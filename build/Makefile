@@ -33,8 +33,8 @@ test: $(TESTS) test_dir
 test_dir:
 	mkdir -p test
 
-%.test: $(TDIR)/%.c
-	$(CC) -o $@ $(CFLAGS) $<
+test/%.test: $(TDIR)/%.c
+	$(CC) -o $@ -I$(SDIR) $(CFLAGS) $<
 
 
 .PHONY: clean
