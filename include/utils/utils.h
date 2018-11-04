@@ -3,13 +3,7 @@
 #define MY_UTIL_H value
 #define UNUSED(x) (void)(x)
 
-#ifndef NULL
-#define NULL 0
-#endif
-
-#ifndef ssize_t
-#define ssize_t long int
-#endif
+#include <unistd.h>
 
 #ifdef DEBUG
 #include <stdio.h>

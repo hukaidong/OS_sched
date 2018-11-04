@@ -3,13 +3,13 @@
 
 #ifdef MOCK_MALLOC
 #include <stdlib.h>
-#define _l
+#define _lib_malloc malloc
+#define _lib_free free
 #else
 #include "my_malloc.h"
 #endif
-#include "utils/utils.h"
 
-#define thread_id_t int
+#include "utils/utils.h"
 
 struct pNode_s
 {
@@ -19,7 +19,7 @@ struct pNode_s
 
 struct tNode_s
 {
-  thread_id_t thread_id;
+  ssize_t thread_id;
   int num_page_claimed;
   struct pNode_s **pHead;
   struct tNode_s  *next;
@@ -27,53 +27,9 @@ struct tNode_s
 
 typedef struct pNode_s pNode;
 typedef struct tNode_s tNode;
-tNode *tHead;
 
-
-// TODO: Hook to my_pthread_create
-void init_thread(thread_id_t thread_id) {
-  tNode* new_node = (tNode*) _lib_malloc(sizeof(tNode));
-  new_node->thread_id = thread_id;
-  new_node->pHead = NULL;
-  new_node->next = tHead;
-  tHead = new_node;
-}
-
-int search_thread(thread_id_t thread_id, tNode **target) {
-  tNode* current = tHead;
-  while (current != NULL) {
-    if (current->thread_id == thread_id) {
-      *target = current;
-      return 1;
-    }
-    current = current->next;
-  }
-  return -1;
-}
-
-// TODO: Hook to my_pthread_destroy
-void delete_thread(thread_id_t key) {
-  tNode *temp = tHead, *prev;
-
-  if (temp != NULL && temp->thread_id == key) {
-    // TODO: free pNodes?
-    tHead = temp->next;
-    _lib_free(temp);
-    return;
-  }
-
-  while (temp != NULL && temp->thread_id != key) {
-    prev = temp;
-    temp = temp->next;
-  }
-
-  if (temp == NULL) return;
-  prev->next = temp->next;
-
-  free(temp);
-}
-
-
-
+void init_thread(ssize_t thread_id);
+int search_thread(ssize_t thread_id, tNode **target);
+void delete_thread(ssize_t thread_id);
 
 #endif /* ifndef MALLOC_THREAD_ENTRIES_H */

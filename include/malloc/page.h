@@ -1,3 +1,5 @@
+#ifndef MY_MALLOC_PAGE_H
+#define MY_MALLOC_PAGE_H value
 #include <stdlib.h>
 #include <signal.h>
 
@@ -16,3 +18,4 @@ void page_swap_out(int index_i);
 void page_swap_in(int index_i, int thread_id);
 void page_swap_in_virtual(int index_i, int thread_id);
 void page_segfault_handler (int sig, siginfo_t *si, void *_);
+#endif /* ifndef MY_MALLOC_PAGE_H */

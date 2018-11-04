@@ -20,41 +20,18 @@ struct sNode_s {
 };
 
 typedef struct sNode_s sNode;
-sNode *s_head;
+
+struct File_Seg_Stack
+{
+    int top;
+    unsigned capacity;
+    ssize_t* array;
+};
+
+typedef struct File_Seg_Stack f_stack_t;
 
 
-void insert_swap_page(ssize_t thread_id, ssize_t page_idx, ssize_t file_idx) {
-  sNode *new_node = (sNode*)_lib_malloc(sizeof(sNode));
-  new_node->thread_id = thread_id;
-  new_node->page_idx = page_idx;
-  new_node->file_idx = file_idx;
-  new_node->next = s_head;
-  s_head = new_node;
-}
-
-int pop_swap_page(ssize_t thread_id, ssize_t page_idx, ssize_t *file_idx) {
-  sNode *temp = s_head, *prev;
-
-  if (temp != NULL &&
-      temp->thread_id == thread_id &&
-      temp->page_idx == page_idx) {
-    *file_idx = temp->file_idx;
-    _lib_free(temp);
-    return 1;
-  }
-
-  if (temp != NULL && (
-      temp->thread_id != thread_id ||
-      temp->page_idx != page_idx)) {
-    prev = temp;
-    temp = temp->next;
-  }
-
-  if (temp == NULL) return -1;
-  prev->next = temp->next;
-  *file_idx = temp->file_idx;
-  free(temp);
-  return 1;
-}
+void insert_swap_page(ssize_t thread_id, ssize_t page_idx);
+int pop_swap_page(ssize_t thread_id, ssize_t page_idx);
 
 #endif /* ifndef MALLOC_PAGE_FILE_MAP */
