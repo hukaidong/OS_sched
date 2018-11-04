@@ -3,6 +3,7 @@
 #include "pthread/sched.h"
 #include "pthread/queue.h"
 #include "pthread/type.h"
+#include "malloc/global.h"
 
 #include <signal.h>
 #include <ucontext.h>
@@ -20,40 +21,40 @@ int my_pthread_mutex_init(
 }
 
 int my_pthread_mutex_lock(mutex_t *mutex) {
-  GML = 1;
+  _enter_sys_mode();
   while (mutex->locked) {
     // LOG(my_pthread_mutex_lock);
     ucontext_t current;
     push(&(mutex->pending), &current);
     DETEACH_THREAD(&current);
-    GML = 1;
+    _enter_sys_mode();
   }
   mutex->locked = true;
-  GML = 0;
+  _enter_user_mode(GetCurrentThreadId());
   return 0;
 }
 
 int my_pthread_mutex_unlock(mutex_t *mutex) {
   // LOG(my_pthread_mutex_unlock);
-  GML = 1;
+  _enter_sys_mode();
   mutex->locked = false;
   if (!is_empty(&(mutex->pending))) {
     ATTACH_THREAD(pop(&(mutex->pending)));
   }
-  GML = 0;
+  _enter_user_mode(GetCurrentThreadId());
   return 0;
 }
 
 int my_pthread_mutex_destroy(mutex_t *mutex) {
-  GML = 1;
+  _enter_sys_mode();
   LOG(my_pthread_mutex_destroy);
   while (mutex->locked) {
     ucontext_t current;
     push(&(mutex->pending), &current);
     DETEACH_THREAD(&current);
-    GML = 1;
+    _enter_sys_mode();
   }
-  GML = 0;
+  _enter_user_mode(GetCurrentThreadId());
   while (!is_empty(&(mutex->pending))) {
     ATTACH_THREAD(pop(&(mutex->pending)));
   }

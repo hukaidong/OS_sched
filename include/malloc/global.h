@@ -1,7 +1,9 @@
 #ifndef MY_MALLOC_GLOBAL_H
 #define MY_MALLOC_GLOBAL_H
 
+#include <sys/mman.h>
 #include "type.h"
+#include "pthread/type.h"
 
 #define UNIT_MB 0x100000
 #define UNIT_KB 0x000400
@@ -30,5 +32,24 @@ ssize_t pointer_2_page_index(void *p)
 
 void *page_index_2_base(ssize_t idx)
 { return (char *)vm_base + ((unsigned long int)idx << PAGE_OFFSET); }
+
+void _enter_sys_mode() {
+  GML = 1;
+  mprotect(sys_vm_base, sys_vm_size, P_RW);
+}
+
+void _enter_user_mode(ssize_t thread_id) {
+  int pidx;
+  mprotect(sys_vm_base, sys_vm_size, P_N);
+
+  for(pidx=0; pidx<PCB_SIZE; pidx++) {
+    if(pcb[pidx].thread_id == thread_id) {
+      mprotect(page_index_2_base(pidx), PAGE_SIZE, P_RW);
+    }
+  }
+  GML = 0;
+}
+void init_thread(ssize_t thread_id);
+void delete_thread(ssize_t thread_id);
 
 #endif /* ifndef MY_MALLOC_GLOBAL_H */

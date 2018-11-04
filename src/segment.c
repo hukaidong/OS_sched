@@ -80,8 +80,25 @@ int seg_find_preceeding_max_size(seg_p seg) {
   return max;
 }
 
+int seg_free(seg_p seg) {
+  FLAG_SET(seg->flags, SEG_AVIL_FMSK);
+  seg_p free_seg_head = seg;
+  if (seg->prev_seg != NULL &&
+      FLAG_CHECK(seg->prev_seg->flags, SEG_AVIL_FMSK)) {
+    free_seg_head = seg->prev_seg;
+    free_seg_head->next_seg = seg->next_seg;
+  }
+  if (!FLAG_CHECK(seg->flags, SEG_TERM_FMSK) &&
+      FLAG_CHECK(seg->next_seg->flags, SEG_AVIL_FMSK)) {
+    free_seg_head->next_seg = seg->next_seg->next_seg;
+    FLAG_TRANSFER(free_seg_head->flags,
+        seg->next_seg->flags, SEG_TERM_FMSK);
+  }
+  return ABSOLUTE_OFFSET(free_seg_head->next_seg, free_seg_head) - sizeof(*seg);
+}
+
 // return max size of segment available around freed seg
-int seg_free(void *p) {
+int sys_seg_free(void* p) {
   seg_p seg = (seg_p) p;
   ABSOLUTE_MOVE(seg, -sizeof(segment_header));
   FLAG_SET(seg->flags, SEG_AVIL_FMSK);
@@ -100,14 +117,19 @@ int seg_free(void *p) {
   return ABSOLUTE_OFFSET(free_seg_head->next_seg, free_seg_head) - sizeof(*seg);
 }
 
-seg_p seg_page_split(seg_p seg, int after_n_page) {
-    seg_p new_seg = seg;
-    ABSOLUTE_MOVE(new_seg, PAGE_SIZE *after_n_page);
+int seg_page_free(void** p) {
+  seg_p seg = (seg_p) *p;
+  ABSOLUTE_MOVE(seg, -sizeof(segment_header));
+  int num_page_to_free = ABSOLUTE_OFFSET(seg->next_seg, seg) / PAGE_SIZE;
 
-    new_seg->prev_seg = NULL;
-    new_seg->next_seg = seg->next_seg;
-    new_seg->flags = 0;
-    FLAG_UNSET(new_seg->flags, SEG_AVIL_FMSK);
+  seg_p new_seg = seg;
+  ABSOLUTE_MOVE(new_seg, PAGE_SIZE * num_page_to_free);
 
-    return new_seg;
+  new_seg->prev_seg = NULL;
+  new_seg->next_seg = seg->next_seg;
+  new_seg->flags = 0;
+  FLAG_UNSET(new_seg->flags, SEG_AVIL_FMSK);
+  *p = new_seg;
+
+  return num_page_to_free;
 }

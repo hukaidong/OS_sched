@@ -1,11 +1,14 @@
+#define NUSER
 #include "pthread/sched.h"
 #include "utils/utils.h"
+#include "malloc/global.h"
 
 #include <signal.h>
 #include <assert.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <ucontext.h>
+#include <stdlib.h>
 
 #define UNUSED(x) (void)(x)
 
@@ -45,8 +48,8 @@ void __sched_init() {
 }
 
 void __sched_deinit() {
-  free(UCT_P2STCK_P(&ENTRY_SCHED_CTX));
-  free(UCT_P2STCK_P(&ENTRY_EXIT_CTX));
+  _lib_free(UCT_P2STCK_P(&ENTRY_SCHED_CTX));
+  _lib_free(UCT_P2STCK_P(&ENTRY_EXIT_CTX));
 }
 
 void __sched_alarmed(int signum) {
@@ -59,7 +62,7 @@ void __sched_alarmed(int signum) {
 
 void __sched_interrupt_next() {
   do {
-    GML = 1;
+    _enter_sys_mode();
     // LOG(__sched_interrupt_next);
     if (current_ctx != NULL) {
       // malloc not save during signal handler
@@ -78,7 +81,7 @@ void __sched_interrupt_next() {
 void __sched_exit_next() {
   // WARNING: DO NOT free memory here, free it when joined
   while (1) {
-    GML = 1;
+    _enter_sys_mode();
     LOG(__sched_exit_next);
     sigrelse(SIGALRM);
     ucontext_t* next = __sched_q_route();
@@ -103,8 +106,8 @@ void __sched_run_next(uctx_p sched_ctx, const uctx_p next)
                /* puts("L QUEUE TRIGGERED!"); */
                break;
   }
-  GML = 0;
   current_ctx = next;
+  _enter_user_mode(GetCurrentThreadId());
   swapcontext(sched_ctx, next);
 }
 
@@ -112,14 +115,17 @@ void __sched_pthread_routine(
     void *(*func) (void*),
     fib_p fib,
     void *args){
+
+  _enter_sys_mode();
   LOG(__sched_pthread_routine);
   fib->rval = func(args);
   LOG(RET:__sched_pthread_routine);
-  GML = 1;
   if (fib->to_join != NULL) {
     ATTACH_THREAD(fib->to_join);
   }
   fib->status = FIB_TERMINATED;
+  ssize_t thread_id = GetCurrentThreadId();
+  delete_thread(thread_id);
 }
 
 ucontext_t* __sched_q_route()
@@ -187,3 +193,5 @@ void __attribute__ ((constructor)) constructor () {
 void __attribute__ ((destructor)) destructor () {
   __sched_deinit();
 }
+
+#undef NUSER
