@@ -1,4 +1,7 @@
+#define NUSER
 #include <signal.h>
+#include <stdlib.h>
+
 
 
 #include "my_malloc.h"
@@ -112,3 +115,4 @@ void page_segfault_handler (int sig, siginfo_t *si, void *_) {
 
 
 }
+#undef NUSER
