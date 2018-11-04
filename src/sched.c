@@ -1,3 +1,4 @@
+#define NUSER
 #include "pthread/sched.h"
 #include "utils/utils.h"
 
@@ -6,6 +7,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <ucontext.h>
+#include <stdlib.h>
 
 #define UNUSED(x) (void)(x)
 
@@ -45,8 +47,8 @@ void __sched_init() {
 }
 
 void __sched_deinit() {
-  free(UCT_P2STCK_P(&ENTRY_SCHED_CTX));
-  free(UCT_P2STCK_P(&ENTRY_EXIT_CTX));
+  _lib_free(UCT_P2STCK_P(&ENTRY_SCHED_CTX));
+  _lib_free(UCT_P2STCK_P(&ENTRY_EXIT_CTX));
 }
 
 void __sched_alarmed(int signum) {
@@ -187,3 +189,5 @@ void __attribute__ ((constructor)) constructor () {
 void __attribute__ ((destructor)) destructor () {
   __sched_deinit();
 }
+
+#undef NUSER

@@ -69,6 +69,9 @@ void release_page(ssize_t pidx, ssize_t thread_id) {
   }
   pcb[pidx].thread_id = -1;
   pcb[pidx].max_avail = -1;
+  tNode* thread_e;
+  search_thread(thread_id, &thread_e);
+  thread_e->num_page_claimed--;
 }
 
 void page_assign(ssize_t pidx, ssize_t thread_id) {
@@ -81,8 +84,19 @@ void page_segfault_handler (int sig, siginfo_t *si, void *_) {
   UNUSED(sig);
   UNUSED(_);
   void *addr = si->si_addr;
-  // thread_id = get_thread_id();
-  // int page_id = (addr & PAGE_MSK) >> PAGE_OFFSET;
-  // page_swap_out(pageid);
-  // page_svap_in(pageid, thread_id);
+  ssize_t thread_id = GetCurrentThreadId();
+  ssize_t page_id = pointer_2_page_index(addr);
+  insert_swap_page(page_id);
+  pop_swap_page(page_id, thread_id);
+}
+
+ssize_t any_page_has_free_size(ssize_t thread_id, int size) {
+  int pidx;
+  for(pidx=0; pidx<PCB_SIZE; pidx++) {
+    if(pcb[pidx].thread_id == thread_id &&
+        pcb[pidx].max_avail > size) {
+      return pidx;
+    }
+  }
+  return -1;
 }
