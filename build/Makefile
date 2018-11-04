@@ -12,31 +12,28 @@ TESTS := $(addprefix test/, $(notdir $(TRCS:.c=.test)))
 PROJECTS := libpthread.a
 
 .PHONY: all
-
 all: $(PROJECTS)
+
+.PHONY: test
+test: $(TESTS) 
+
+.PHONY: clean
+clean: 
+	-rm -r obj test
+	
+.PHONY: obj_dir
+obj_dir:
+	mkdir -p obj
+
+.PHONY: test_dir
+test_dir:
+	mkdir -p test
+
+test/%.test: $(TDIR)/%.c test_dir
+	$(CC) -o $@ -I$(SDIR) $(CFLAGS) $<
 
 libpthread.a: $(OBJECTS)
 	$(AR) $@ $^
 	
 obj/%.o: $(SDIR)/%.c obj_dir
 	$(CC) -o $@ $(CFLAGS) $< -c
-	
-.PHONY: obj_dir
-obj_dir:
-	mkdir -p obj
-
-.PHONY: test
-test: $(TESTS) test_dir
-	mkdir -p test
-
-.PHONY: test_dir
-test_dir:
-	mkdir -p test
-
-test/%.test: $(TDIR)/%.c
-	$(CC) -o $@ -I$(SDIR) $(CFLAGS) $<
-
-
-.PHONY: clean
-clean: 
-	-rm -r obj test

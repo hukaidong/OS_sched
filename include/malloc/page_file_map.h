@@ -9,11 +9,12 @@
 #define _lib_free free
 #endif
 
+#include "malloc/type.h"
 #include "utils/utils.h"
 
 
 struct sNode_s {
-  ssize_t thread_id;
+  page_entry pcb;
   ssize_t page_idx;
   ssize_t file_idx;
   struct sNode_s* next;
@@ -31,7 +32,7 @@ struct File_Seg_Stack
 typedef struct File_Seg_Stack f_stack_t;
 
 
-void insert_swap_page(ssize_t thread_id, ssize_t page_idx);
+void insert_swap_page(ssize_t page_idx);
 int pop_swap_page(ssize_t thread_id, ssize_t page_idx);
 
 #endif /* ifndef MALLOC_PAGE_FILE_MAP */

@@ -27,17 +27,10 @@ typedef struct segment_header {
   char            buf[0];
 } segment_header, *seg_p;
 
-
 typedef struct page_entry {
-  unsigned int  thread_id;
-  unsigned int  max_avail;
+  ssize_t  thread_id;
+  size_t  max_avail;
 } page_entry;
-
-typedef struct thread_entry {
-  unsigned int page_owned_num;
-} thread_entry;
-
-thread_entry DEFAULT_THREAD_ENTRY = {0};
 
 
 #define MAX(a,b) ({ __typeof__ (a) _a = (a);\

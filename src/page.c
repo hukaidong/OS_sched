@@ -1,24 +1,19 @@
-#define NUSER
 #include <signal.h>
-#include <stdlib.h>
+#include <sys/mman.h>
 
 #include "my_malloc.h"
 #include "malloc/type.h"
-#include "malloc/segment.h"
 #include "malloc/global.h"
 #include "malloc/thread_entries.h"
 #include "malloc/page.h"
+#include "malloc/pcb.h"
+#include "malloc/page_file_map.h"
 #include "pthread/type.h"
+#include "malloc/segment.h"
 
 // TODO: bind to scheduler
 void _page_setup() {
-  posix_memalign(&vm_base, VM_SIZE, VM_SIZE);
-  sys_vm_base = (char*)vm_base + (6*UNIT_MB);
-  shared_vm_base = (char*)vm_base +(8*UNIT_MB) - (16*UNIT_KB);
-  sys_seg_init(sys_vm_base, shared_vm_base);
-  sys_seg_init(shared_vm_base, (char*)vm_base+VM_SIZE);
-
-
+  __ds_init();
   struct sigaction sa;
   sa.sa_flags = SA_SIGINFO;
   sigemptyset(&sa.sa_mask);
@@ -26,76 +21,62 @@ void _page_setup() {
   sigaction(SIGSEGV, &sa, NULL);
 
 }
+void _page_protect(ssize_t pidx) {
+  mprotect(
+      page_index_2_base(pidx),
+      PAGE_SIZE, P_N);
+}
+
+void _page_unprotect(ssize_t pidx) {
+  mprotect(
+      page_index_2_base(pidx),
+      PAGE_SIZE, P_RW);
+}
 
 void *new_page(size_t size_req, ssize_t thread_id) {
-  //   thread's pagenum += req_page_num;
-  //   if find new free page by page num as index_i
-  //   else find new page by swap out page owned by other thread
-  //   for all index_i ... index_i + req_page_num
-  //     page_assign(i, thread)
-  //   maxfree = seg_init(page_id2page(inedx_i), req_page_num, size_req);
-  //   page[index_i].maxfree = maxfree
-  //   return page_id2page(index_i) + sizeof(seghead)
   int req_page_num = (size_req + sizeof(segment_header)) / PAGE_SIZE + 1;
+  ssize_t pidx;
   tNode* thread_e;
   search_thread(thread_id, &thread_e);
   if(thread_e->num_page_claimed > PAGE_LIM_PER_THREAD)
     return NULL;
   else{
-
+    if((pidx = pcb_next_free_page(thread_id, req_page_num))<0) {
+      pidx = pcb_next_swapable_page(thread_id, req_page_num);
+      if (pidx >= 0) {
+        for (int i=0; i<req_page_num; i++) {
+          insert_swap_page(pidx+i);
+        }
+      } else {
+        return NULL;
+      }
+    }
+    thread_e->num_page_claimed += req_page_num;
   }
-}
-
-void release_page(ssize_t pageid, ssize_t thread_id) {
-  // if pageid not belongs to thread_id
-  if(page_belongs[pageid].thread_id!= thread_id){
-    page_swap_out(pageid);
-    page_swap_in_virtual(pageid,thread_id);
-    page_belongs[pageid].thread_id = -1;
+  for (int i=0; i<req_page_num; i++) {
+    page_assign(pidx+i, thread_id);
   }
-  //   page_swap_out(pageid);
-  //   page_swap_in_virtual(pageid, threadid);
-  // page[pageid].thread_id = -1;
+  int  maxfree = seg_init(page_index_2_base(pidx), req_page_num, size_req);
+  pcb[pidx].max_avail = maxfree;
+  return page_index_2_base(pidx) + sizeof(segment_header);
 }
 
-void *page_id2page(ssize_t pageid) {
-  // return vm_base | pageid << PAGE_MASK_OFFSET;
-  return page_index_2_base(pageid);
+void release_page(ssize_t pidx, ssize_t thread_id) {
+  if(pcb[pidx].thread_id!= thread_id){
+    insert_swap_page(pidx);
+    page_swap_in_virtual(pidx, thread_id);
+  }
+  pcb[pidx].thread_id = -1;
+  pcb[pidx].max_avail = -1;
 }
 
-/* void page_assign(ssize_t index_i, ssize_t thread_id) { */
-  /* // page[i].thread_id = thread_id */
-  /* page_belongs[index_i].thread_id = thread_id; */
-  /* // page[i].maxfree = 0 */
-  /* page_belongs[index_i].max_avail = 0; */
-  /* // mprotect(page_buf, pagesize, PROT_READ | PROT_WRITE); */
-  /* mprotect(__sys_buf,page_belongs[index_i].page_size, PROT_READ | PROT_WRITE); */
-/* } */
-
-void page_swap_out(ssize_t index_i) {
-  // threadid = page[index_i].thread_id
-  // pos = file_seg.pop
-  // if not pos
-  //   pos = file_tail_pos
-  //   file_tail_pos++;
-  // swap_to_file(pos, index_i)
-  // thread.file_swap.push_back (index, pos)
-  // mprotect(page_buf, pagesize, PROT_NONE);
+void page_assign(ssize_t pidx, ssize_t thread_id) {
+  pcb[pidx].thread_id = thread_id;
+  pcb[pidx].max_avail = 0;
+  _page_unprotect(pidx);
 }
 
-void page_swap_in(ssize_t index_i, ssize_t thread_id) {
-  // pos = thread.file_swap.pop(index_i)
-  // file_seg.push_back(pos)
-  // swap_from_file(pos, index_i);
-  // mprotect(page_buf, pagesize, PROT_READ | PROT_WRITE);
-}
 
-void page_swap_in_virtual(ssize_t index_i, ssize_t thread_id) {
-  // swap page but not do memcpy (faster release page)
-  // pos = thread.file_swap.pop(index_i)
-  // file_seg.push_back(pos)
-  // mprotect(page_buf, pagesize, PROT_READ | PROT_WRITE);
-}
 
 void page_segfault_handler (int sig, siginfo_t *si, void *_) {
   UNUSED(sig);
@@ -105,7 +86,4 @@ void page_segfault_handler (int sig, siginfo_t *si, void *_) {
   // int page_id = (addr & PAGE_MSK) >> PAGE_OFFSET;
   // page_swap_out(pageid);
   // page_svap_in(pageid, thread_id);
-
-
 }
-#undef NUSER
