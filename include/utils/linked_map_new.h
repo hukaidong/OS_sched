@@ -57,6 +57,19 @@ int _f_##head_t##_peek(head_t *head, key_t key, val_t *val){\
   }\
   return -1;\
 }\
+\
+int _f_##head_t##_default_peek(head_t *head, key_t key, val_t *val){\
+  node_t *current = head->next;\
+  while (current != NULL) {\
+    if (current->key == key) {\
+      *val = current->val;\
+      return 1;\
+    }\
+    current = current->next;\
+  }\
+  _f_##head_t##_insert(head, key, *val);\
+  return -1;\
+}\
 
 
 #define define_lmap(name, key_t, val_t) \
@@ -65,11 +78,11 @@ int _f_##head_t##_peek(head_t *head, key_t key, val_t *val){\
 #define lm_node_t(name) __lmp_node_##name
 #define lm_h_init(head) __lmp_init_##head_t(&head)
 #define lm_insert(head, key, val)\
-  __typeof__(head)_insert(head, key, val)
+  _f_##__typeof__(*head)##_insert(head, key, val)
 #define lm_pop(head, key, val)\
-  __typeof__(head)_pop(head, key, val)
+  _f_##__typeof__(*head)##_pop(head, key, val)
 #define lm_peek(head, key, val)\
-  __typeof__(head)_peek(head, key, val)
+  _f_##__typeof__(*head)##_peek(head, key, val)
 
 
 

@@ -27,8 +27,8 @@ void _page_setup() {
 }
 
 void *new_page(int size_req, int thread_id) {
-  //   int req_page_num = (size_req + sizeof(segment_header)) / PAGE_SIZE + 1;
   int req_page_num = (size_req + sizeof(segment_header)) / PAGE_SIZE + 1;
+
   //   if thread's pagenum + req_page_num > PAGELIM
   if(req_page_num > page_size)
     return NULL;
