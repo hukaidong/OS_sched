@@ -16,6 +16,9 @@ typedef struct head_t  {\
   node_t *next;\
 } head_t; \
 \
+void lmp_head_init(head_t head) {\
+  head.next = NULL;\
+}\
 void lmp_insert(head_t head, key_t key, val_t val) {\
   node_t *new_node = (node_t*)_lib_malloc(sizeof(node_t));\
   new_node->key = key;\
