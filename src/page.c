@@ -34,6 +34,7 @@ void _page_unprotect(ssize_t pidx) {
 }
 
 void *new_page(size_t size_req, ssize_t thread_id) {
+  int i;
   int req_page_num = (size_req + sizeof(segment_header)) / PAGE_SIZE + 1;
   ssize_t pidx;
   tNode* thread_e;
@@ -44,7 +45,7 @@ void *new_page(size_t size_req, ssize_t thread_id) {
     if((pidx = pcb_next_free_page(thread_id, req_page_num))<0) {
       pidx = pcb_next_swapable_page(thread_id, req_page_num);
       if (pidx >= 0) {
-        for (int i=0; i<req_page_num; i++) {
+        for (i=0; i<req_page_num; i++) {
           insert_swap_page(pidx+i);
         }
       } else {
@@ -53,7 +54,7 @@ void *new_page(size_t size_req, ssize_t thread_id) {
     }
     thread_e->num_page_claimed += req_page_num;
   }
-  for (int i=0; i<req_page_num; i++) {
+  for (i=0; i<req_page_num; i++) {
     page_assign(pidx+i, thread_id);
   }
   int  maxfree = seg_init(page_index_2_base(pidx), req_page_num, size_req);
@@ -75,8 +76,6 @@ void page_assign(ssize_t pidx, ssize_t thread_id) {
   pcb[pidx].max_avail = 0;
   _page_unprotect(pidx);
 }
-
-
 
 void page_segfault_handler (int sig, siginfo_t *si, void *_) {
   UNUSED(sig);

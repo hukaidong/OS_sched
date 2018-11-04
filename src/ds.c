@@ -187,9 +187,10 @@ void _enter_sys_mode() {
 }
 
 void _enter_user_mode(ssize_t thread_id) {
+  int pidx;
   mprotect(sys_vm_base, sys_vm_size, P_N);
 
-  for(int pidx=0; pidx<PCB_SIZE; pidx++) {
+  for(pidx=0; pidx<PCB_SIZE; pidx++) {
     if(pcb[pidx].thread_id == thread_id) {
       mprotect(page_index_2_base(pidx), PAGE_SIZE, P_RW);
     }
@@ -197,7 +198,8 @@ void _enter_user_mode(ssize_t thread_id) {
 }
 
 void _thread_purge(ssize_t thread_id) {
-  for(int pidx=0; pidx<PCB_SIZE; pidx++) {
+  int pidx;
+  for(pidx=0; pidx<PCB_SIZE; pidx++) {
     if(pcb[pidx].thread_id == thread_id) {
       pcb[pidx].thread_id = -1;
       pcb[pidx].max_avail = -1;
@@ -264,7 +266,8 @@ ssize_t new_swapable_page(ssize_t thread_id, int size) {
 }
 
 ssize_t thread_page_has_free_size(ssize_t thread_id, int size) {
-  for(int pidx=0; pidx<PCB_SIZE; pidx++) {
+  int pidx;
+  for(pidx=0; pidx<PCB_SIZE; pidx++) {
     if(pcb[pidx].thread_id == thread_id &&
         pcb[pidx].max_avail > size) {
       return pidx;
