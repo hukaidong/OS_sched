@@ -1,6 +1,8 @@
 # compiled file 
 Benchmark/*
 !Benchmark/Makefile
+build/*
+!build/Makefile
 
 # Prerequisites
 *.d

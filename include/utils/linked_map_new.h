@@ -1,7 +1,14 @@
 #ifndef MY_LINKED_MAP_NEW_H
 #define MY_LINKED_MAP_NEW_H
 
+#ifndef DEBUG
 #include "my_malloc.h"
+#else
+#include <stdlib.h>
+#define _lib_malloc malloc
+#define _lib_free free
+#endif
+
 #include "utils.h"
 
 #define __define_lmap(node_t, head_t, key_t, val_t, name) \
@@ -67,7 +74,7 @@ int _f_##name##_default_peek(head_t *head, key_t key, val_t *val){\
     }\
     current = current->next;\
   }\
-  _f_##head_t##_insert(head, key, *val);\
+  _f_##name##_insert(head, key, *val);\
   return -1;\
 }\
 
@@ -76,7 +83,7 @@ int _f_##name##_default_peek(head_t *head, key_t key, val_t *val){\
   __define_lmap(__lmp_node_##name, __lmp_head_##name, key_t, val_t, name)
 #define lm_head_t(name) __lmp_head_##name*
 #define lm_node_t(name) __lmp_node_##name
-#define lm_h_init(head) __lmp_init_##head_t(&head)
+#define lm_h_init(name, head) _f_##name##_init(&head)
 #define lm_insert(name, head, key, val)\
   _f_##name##_insert(head, key, val)
 #define lm_pop(name, head, key, val)\
