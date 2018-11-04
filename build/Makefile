@@ -34,7 +34,7 @@ test_dir:
 	mkdir -p test
 
 test/%.test: $(TDIR)/%.c
-	$(CC) -o $@ $(CFLAGS) $<
+	$(CC) -o $@ -I$(SDIR) $(CFLAGS) $<
 
 
 .PHONY: clean
