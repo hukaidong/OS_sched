@@ -7,7 +7,7 @@ CFLAGS := -I$(IDIR)
 SRCS := $(wildcard $(SDIR)/**.c)
 TRCS := $(wildcard $(TDIR)/**.c)
 OBJECTS := $(SRCS:.c=.o)
-TESTS := $(TRCS:.c=.out)
+TESTS := $(notdir $(TRCS:.c=.out))
 
 PROJECTS := libpthread.a
 
@@ -24,6 +24,6 @@ libpthread.a: $(OBJECTS)
 .PHONY: test
 test: $(TESTS)
 
-%.out: %.c
+%.out: $(TDIR)/%.c
 	$(CC) -o $@ $(CFLAGS) $<
 
