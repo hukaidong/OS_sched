@@ -33,7 +33,7 @@ test: $(TESTS) test_dir
 test_dir:
 	mkdir -p test
 
-%.test: $(TDIR)/%.c
+test/%.test: $(TDIR)/%.c
 	$(CC) -o $@ $(CFLAGS) $<
 
 
