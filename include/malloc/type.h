@@ -21,8 +21,8 @@
 #define SEG_TERM_FMSK 0x02
 
 typedef struct segment_header {
-  segment_header *prev_seg;
-  segment_header *next_seg;
+  struct segment_header *prev_seg;
+  struct segment_header *next_seg;
   unsigned int    flags;
   char            buf[0];
 } segment_header, *seg_p;
@@ -33,17 +33,10 @@ typedef struct page_entry {
   unsigned int  max_avail;
 } page_entry;
 
-typedef struct node{
-    int key;
-    int val;
-    node *next;
-}node, *node_p;
+typedef struct thread_entry {
+  unsigned int page_owned_num;
+} thread_entry;
 
-typedef struct node2{
-  int key;
-  node *head;
-  node2 *next;
-}node2, *node2_p;
 
 #define MAX(a,b) ({ __typeof__ (a) _a = (a);\
     __typeof__ (b) _b = (b); _a > _b ? _a : _b; })

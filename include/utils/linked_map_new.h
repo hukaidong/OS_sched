@@ -1,11 +1,10 @@
 #ifndef MY_LINKED_MAP_NEW_H
 #define MY_LINKED_MAP_NEW_H
 
-#include "../my_malloc.h"
+#include "my_malloc.h"
 #include "utils.h"
 
-
-#define __define_lmap(node_t, head_t, key_t, val_t, name)\
+#define __define_lmap(node_t, head_t, key_t, val_t, name) \
 \
 typedef struct node_t {\
   key_t key;\
@@ -17,13 +16,13 @@ typedef struct head_t {\
   node_t *next;\
 } head_t; \
 \
-__lmp_init(head_t** init_head) {\
+void ##head_t##_init(head_t** init_head) {\
   head_t *head = (head_t *)_lib_malloc(sizeof(head_t));\
   head->next = NULL;\
   *init_head = head;\
 }\
 \
-void lmp_insert(head_t* head, key_t key, val_t val) {\
+void ##head_t##_insert(head_t* head, key_t key, val_t val) {\
   node_t *new_node = (node_t*)_lib_malloc(sizeof(node_t));\
   new_node->key = key;\
   new_node->val = val;\
@@ -31,7 +30,7 @@ void lmp_insert(head_t* head, key_t key, val_t val) {\
   head->next = new_node;\
 }\
 \
-int lmp_pop(head_t *head, key_t key, val_t *val){\
+int ##head_t##_pop(head_t *head, key_t key, val_t *val){\
   node_t **last = &head->next, \
          *current = head->next;\
   while (current != NULL) {\
@@ -46,12 +45,32 @@ int lmp_pop(head_t *head, key_t key, val_t *val){\
   }\
   return -1;\
 }\
+\
+int ##head_t##_peek(head_t *head, key_t key, val_t *val){\
+  node_t *current = head->next;\
+  while (current != NULL) {\
+    if (current->key == key) {\
+      *val = current->val;\
+      return 1;\
+    }\
+    current = current->next;\
+  }\
+  return -1;\
+}\
 
-#define define_lmap(name, key_t, val_t)\
+
+#define define_lmap(name, key_t, val_t) \
   __define_lmap(__lmp_node_##name, __lmp_head_##name, key_t, val_t, name)
 #define lm_head_t(name) __lmp_head_##name*
 #define lm_node_t(name) __lmp_node_##name
-#define lm_h_init(head) __lmp_init(&head)
+#define lm_h_init(head) __lmp_init_##head_t(&head)
+#define lm_insert(head, key, val)\
+  __typeof__(head)_insert(head, key, val)
+#define lm_pop(head, key, val)\
+  __typeof__(head)_pop(head, key, val)
+#define lm_peek(head, key, val)\
+  __typeof__(head)_peek(head, key, val)
+
 
 
 // Example:

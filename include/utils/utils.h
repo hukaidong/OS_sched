@@ -2,7 +2,10 @@
 
 #define MY_UTIL_H value
 #define UNUSED(x) (void)(x)
+
+#ifndef NULL
 #define NULL 0
+#endif
 
 #ifdef DEBUG
 #include <stdio.h>
