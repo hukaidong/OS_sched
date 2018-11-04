@@ -29,8 +29,6 @@ typedef struct pNode_s pNode;
 typedef struct tNode_s tNode;
 
 void __ds_init();
-void init_thread(ssize_t thread_id);
 int search_thread(ssize_t thread_id, tNode **target);
-void delete_thread(ssize_t thread_id);
 
 #endif /* ifndef MALLOC_THREAD_ENTRIES_H */

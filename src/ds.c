@@ -182,20 +182,6 @@ int pop_swap_page(ssize_t thread_id, ssize_t page_idx) {
 #include <sys/mman.h>
 #include "malloc/pcb.h"
 
-void _enter_sys_mode() {
-  mprotect(sys_vm_base, sys_vm_size, P_RW);
-}
-
-void _enter_user_mode(ssize_t thread_id) {
-  int pidx;
-  mprotect(sys_vm_base, sys_vm_size, P_N);
-
-  for(pidx=0; pidx<PCB_SIZE; pidx++) {
-    if(pcb[pidx].thread_id == thread_id) {
-      mprotect(page_index_2_base(pidx), PAGE_SIZE, P_RW);
-    }
-  }
-}
 
 void _thread_purge(ssize_t thread_id) {
   int pidx;
