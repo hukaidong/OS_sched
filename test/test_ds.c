@@ -4,6 +4,9 @@
 #include "malloc/segment.h"
 #include "malloc/thread_entries.h"
 #include "../src/ds.c"
+#include "../src/segment.c"
+
+
 ssize_t id = 1;
 ssize_t id_2 = 2;
 ssize_t id_3 = 5;

@@ -81,8 +81,17 @@ int _f_stack_is_empty()
 
 void _f_stack_increase_capasity()
   // TODO: increase capasity!!
-{ return; }
-
+{
+  int temp = f_stack.capacity;
+  f_stack_t f_stack_new;
+  f_stack_new.capacity = 40;
+  f_stack_new.top = f_stack_new.capacity-temp-1;
+  f_stack_new.array = (ssize_t*) malloc(40*sizeof(ssize_t));
+  memcpy(f_stack_new.array,f_stack.array,strlen(f_stack.array));
+  free(f_stack.array);
+  f_stack = f_stack_new;
+  return; 
+}
 void f_stack_push_seg(ssize_t item)
 {
   if (_f_stack_is_full())
