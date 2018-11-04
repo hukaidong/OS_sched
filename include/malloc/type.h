@@ -37,6 +37,8 @@ typedef struct thread_entry {
   unsigned int page_owned_num;
 } thread_entry;
 
+thread_entry DEFAULT_THREAD_ENTRY = {0};
+
 
 #define MAX(a,b) ({ __typeof__ (a) _a = (a);\
     __typeof__ (b) _b = (b); _a > _b ? _a : _b; })

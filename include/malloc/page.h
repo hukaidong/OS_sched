@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <signal.h>
 
 typedef struct page_entry {
   int belongs_to;

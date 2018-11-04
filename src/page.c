@@ -2,11 +2,11 @@
 
 
 #include "my_malloc.h"
-
 #include "malloc/type.h"
 #include "malloc/page.h"
 #include "malloc/global.h"
 #include "malloc/segment.h"
+#include "pthread/type.h"
 
 
 
@@ -28,7 +28,8 @@ void _page_setup() {
 
 void *new_page(int size_req, int thread_id) {
   int req_page_num = (size_req + sizeof(segment_header)) / PAGE_SIZE + 1;
-
+  thread_entry entry = DEFAULT_THREAD_ENTRY;
+  lm_peek(thread_seg, thread_id, entry);
   //   if thread's pagenum + req_page_num > PAGELIM
   if(req_page_num > page_size)
     return NULL;

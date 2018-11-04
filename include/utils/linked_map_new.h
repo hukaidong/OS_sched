@@ -16,13 +16,13 @@ typedef struct head_t {\
   node_t *next;\
 } head_t; \
 \
-void _f_##head_t##_init(head_t** init_head) {\
+void _f_##name##_init(head_t** init_head) {\
   head_t *head = (head_t *)_lib_malloc(sizeof(head_t));\
   head->next = NULL;\
   *init_head = head;\
 }\
 \
-void _f_##head_t##_insert(head_t* head, key_t key, val_t val) {\
+void _f_##name##_insert(head_t* head, key_t key, val_t val) {\
   node_t *new_node = (node_t*)_lib_malloc(sizeof(node_t));\
   new_node->key = key;\
   new_node->val = val;\
@@ -30,7 +30,7 @@ void _f_##head_t##_insert(head_t* head, key_t key, val_t val) {\
   head->next = new_node;\
 }\
 \
-int _f_##head_t##_pop(head_t *head, key_t key, val_t *val){\
+int _f_##name##_pop(head_t *head, key_t key, val_t *val){\
   node_t **last = &head->next, \
          *current = head->next;\
   while (current != NULL) {\
@@ -46,7 +46,7 @@ int _f_##head_t##_pop(head_t *head, key_t key, val_t *val){\
   return -1;\
 }\
 \
-int _f_##head_t##_peek(head_t *head, key_t key, val_t *val){\
+int _f_##name##_peek(head_t *head, key_t key, val_t *val){\
   node_t *current = head->next;\
   while (current != NULL) {\
     if (current->key == key) {\
@@ -58,7 +58,7 @@ int _f_##head_t##_peek(head_t *head, key_t key, val_t *val){\
   return -1;\
 }\
 \
-int _f_##head_t##_default_peek(head_t *head, key_t key, val_t *val){\
+int _f_##name##_default_peek(head_t *head, key_t key, val_t *val){\
   node_t *current = head->next;\
   while (current != NULL) {\
     if (current->key == key) {\
@@ -77,12 +77,14 @@ int _f_##head_t##_default_peek(head_t *head, key_t key, val_t *val){\
 #define lm_head_t(name) __lmp_head_##name*
 #define lm_node_t(name) __lmp_node_##name
 #define lm_h_init(head) __lmp_init_##head_t(&head)
-#define lm_insert(head, key, val)\
-  _f_##__typeof__(*head)##_insert(head, key, val)
-#define lm_pop(head, key, val)\
-  _f_##__typeof__(*head)##_pop(head, key, val)
-#define lm_peek(head, key, val)\
-  _f_##__typeof__(*head)##_peek(head, key, val)
+#define lm_insert(name, head, key, val)\
+  _f_##name##_insert(head, key, val)
+#define lm_pop(name, head, key, val)\
+  _f_##name##_pop(head, key, val)
+#define lm_peek(name, head, key, val)\
+  _f_##name##_peek(head, key, val)
+#define lm_dpeek(name,head, key, val)\
+  _f_##name##_default_peek(head, key, val)
 
 
 
