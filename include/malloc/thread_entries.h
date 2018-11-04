@@ -30,6 +30,7 @@ typedef struct tNode_s tNode;
 tNode *tHead;
 
 
+// TODO: Hook to my_pthread_create
 void init_thread(thread_id_t thread_id) {
   tNode* new_node = (tNode*) _lib_malloc(sizeof(tNode));
   new_node->thread_id = thread_id;
@@ -50,6 +51,7 @@ int search_thread(thread_id_t thread_id, tNode **target) {
   return -1;
 }
 
+// TODO: Hook to my_pthread_destroy
 void delete_thread(thread_id_t key) {
   tNode *temp = tHead, *prev;
 

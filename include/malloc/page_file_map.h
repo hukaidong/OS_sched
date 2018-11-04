@@ -57,10 +57,4 @@ int pop_swap_page(ssize_t thread_id, ssize_t page_idx, ssize_t *file_idx) {
   return 1;
 }
 
-
-
-
-
-
-
 #endif /* ifndef MALLOC_PAGE_FILE_MAP */
