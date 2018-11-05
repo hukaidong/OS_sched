@@ -14,6 +14,7 @@ void * FIB_P2STCK_P(fib_p fib);
 fib_p  UCTX_P2FIB_P(uctx_p ctx);
 uctx_p FIB_P2UCTX_P(fib_p fib);
 
+void _page_setup();
 void _enter_sys_mode();
 void _enter_user_mode(ssize_t thread_id);
 

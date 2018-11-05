@@ -3,7 +3,6 @@
 
 #include "types.h"
 
-void _page_setup();
 void _page_protect(ssize_t pidx);
 void _page_unprotect(ssize_t pidx);
 void *new_page(size_t size_req, ssize_t thread_id);

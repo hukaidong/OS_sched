@@ -106,6 +106,7 @@ int last_q_invoked = QTOP;
 
 
 void __sched_init() {
+  _page_setup();
   q_init(&QThreadH);
   q_init(&QThreadM);
   q_init(&QThreadL);
