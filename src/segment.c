@@ -29,9 +29,13 @@ seg_p seg_find_avail(void *pte, int size) {
   seg_p seg = (seg_p) pte;
   int size_req = size + sizeof(*seg);
 
-  while (
-      !FLAG_CHECK(seg->flags, SEG_AVIL_FMSK) ||
-      ABSOLUTE_OFFSET(seg->next_seg, seg) < size_req ) {
+  while ( !(FLAG_CHECK(seg->flags, SEG_AVIL_FMSK) &&
+      ABSOLUTE_OFFSET(seg->next_seg, seg) > size_req )) {
+    int a = FLAG_CHECK(seg->flags, SEG_AVIL_FMSK);
+    int b = ABSOLUTE_OFFSET(seg->next_seg, seg);
+    int c = FLAG_CHECK(seg->flags, SEG_TERM_FMSK);
+    if (FLAG_CHECK(seg->flags, SEG_TERM_FMSK))
+      return NULL;
     seg = seg->next_seg;
   }
   return seg;

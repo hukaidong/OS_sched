@@ -30,7 +30,7 @@
 #define FLAG_UNSET(flg, msk) do { flg &= (~msk); } while (0)
 #define FLAG_TRANSFER(flg, src, msk) \
   do { flg = ((flg & (~msk)) | (src & msk) ); } while (0)
-#define FLAG_CHECK(flg, msk) ((flg & msk) == 0)
+#define FLAG_CHECK(flg, msk) ((flg & msk) != 0)
 
 #define MAX(a,b) ({ __typeof__ (a) _a = (a);\
     __typeof__ (b) _b = (b); _a > _b ? _a : _b; })

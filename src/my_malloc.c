@@ -4,6 +4,8 @@
 #include "page.h"
 #include "pcb.h"
 #include "types.h"
+#include "casts.h"
+#include "const.h"
 #include "utils/utils.h"
 
 
@@ -34,10 +36,15 @@ void *myallocate_s(int size, const char *fname,int lnum, char flags) {
 }
 
 void *myallocate(int size, const char *fname,int lnum, char flags) {
-  _enter_sys_mode();
-  void *p = myallocate_s(size, fname, lnum, flags);
-  long int thread_id = GetCurrentThreadId();
-  _enter_user_mode(thread_id);
+  void *p;
+  if(flags & LIBRARYREQ) {
+    p = myallocate_s(size, fname, lnum, flags);
+  } else {
+    _enter_sys_mode();
+    p = myallocate_s(size, fname, lnum, flags);
+    long int thread_id = GetCurrentThreadId();
+    _enter_user_mode(thread_id);
+  }
   return p;
 }
 
@@ -65,8 +72,12 @@ void mydeallocate_s(void* pointer, const char *fname, int lnum, char flags) {
 }
 
 void mydeallocate(void* pointer, const char *fname, int lnum, char flags) {
+  if (flags & LIBRARYREQ) {
+    mydeallocate_s(pointer, fname, lnum, flags);
+  } else {
   _enter_sys_mode();
   mydeallocate_s(pointer, fname, lnum, flags);
   long int thread_id = GetCurrentThreadId();
   _enter_user_mode(thread_id);
+  }
 }

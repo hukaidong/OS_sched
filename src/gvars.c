@@ -24,3 +24,4 @@ int swap_fd;
 
 tNode *tHead;
 ssize_t file_tail_pos;
+int thread_idx_accu = 1;

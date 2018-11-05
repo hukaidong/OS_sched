@@ -1,6 +1,8 @@
 #define NUSER
 #include "sched.h"
 #include "casts.h"
+#include "gvars.h"
+#include "page.h"
 #include "utils/utils.h"
 
 #include <stdio.h>
@@ -11,7 +13,13 @@
 #define _STACK_SIZE sizeof(my_stack_t)
 #define _THREAD_SIZE sizeof(my_thread_t)
 #define _NEW_STACK() _lib_malloc(_STACK_SIZE)
-#define _NEW_THREAD() _lib_malloc(_THREAD_SIZE)
+
+inline void* _NEW_THREAD() {
+  void *p = new_page(sizeof(my_stack_t), 0);
+  ssize_t thread_id = (ssize_t)p & ((~0ull) >>1);
+  page_assign(pointer_2_page_index(p), thread_id);
+  return p;
+}
 
 inline void
 _INIT_CTX(uctx_p ctx, const uctx_p link) {
@@ -31,6 +39,7 @@ INIT_THREAD(fib_p *fiber) {
   void * stk = &(thread->stack);
   uctx_p ctx = FIB_P2UCTX_P(fib);
 
+  fib->thread_id = thread_idx_accu++;
   fib->status = FIB_RUNNING;
   fib->rval = NULL;
   fib->to_join = NULL;

@@ -43,6 +43,7 @@ void init_thread(ssize_t thread_id) {
   new_node->next = tHead;
   tHead = new_node;
 }
+
 int search_thread(ssize_t thread_id, tNode **target) {
   tNode* current = tHead;
   while (current != NULL) {

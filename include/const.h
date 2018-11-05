@@ -4,7 +4,6 @@
 #define UNIT_MB 0x100000
 #define UNIT_KB 0x000400
 
-
 #define PAGE_MSK (8*UNIT_MB-4*UNIT_KB)
 #define PAGE_OFFSET 12
 #define PAGE_SIZE 4*UNIT_KB

@@ -10,7 +10,7 @@ extern void
 
 extern page_entry pcb[PCB_SIZE];
 extern ssize_t pwander, file_tail_pos;
-extern int thread_detached, swap_fd;
+extern int thread_detached, swap_fd, thread_idx_accu;
 extern int volatile GML;
 extern ucontext_t *current_ctx;
 

@@ -24,13 +24,14 @@ typedef struct {
 } Quctx;
 
 typedef struct {
-  char        member[16384];
+  char        member[4*UNIT_KB];
 } my_stack_t;
 
 // UCTX must at the first position
 typedef struct {
   ucontext_t  uctx;
   int         status;
+  int         thread_id;
   void        *rval;
   ucontext_t  *to_join;
 } my_fiber_t, *fib_p;

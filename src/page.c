@@ -11,7 +11,6 @@
 #include "segment.h"
 #include "casts.h"
 
-// TODO: bind to scheduler
 void _page_setup() {
   __ds_init();
   struct sigaction sa;
