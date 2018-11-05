@@ -2,8 +2,15 @@
 #include "malloc/page_file_map.h"
 #include "malloc/segment.h"
 #include "malloc/thread_entries.h"
+<<<<<<< HEAD
 #include "malloc/global.h"
 #include "utils/minunit.h"
+=======
+#include "../src/ds.c"
+#include "../src/segment.c"
+
+>>>>>>> 04de17a8e7b3e91137858982c3c83946e2c903d3
+
 ssize_t id = 1;
 ssize_t id_2 = 2;
 ssize_t id_3 = 5;
