@@ -4,9 +4,11 @@
 #include "malloc/thread_entries.h"
 #include "malloc/global.h"
 #include "utils/minunit.h"
+
 ssize_t id = 1;
 ssize_t id_2 = 2;
 ssize_t id_3 = 5;
+
 int foo = 0;
 int bar = 0;
 int bar2 = 0;
