@@ -4,12 +4,12 @@ IDIR = ../include
 SDIR = ../src
 TDIR = ../test
 CFLAGS := -I$(IDIR) -Wfatal-errors -g -Wall
-SRCS := $(wildcard $(SDIR)/**.c)
-TRCS := $(wildcard $(TDIR)/**.c)
-OBJECTS := $(addprefix obj/, $(notdir $(SRCS:.c=.o)))
-TESTS := $(addprefix test/, $(notdir $(TRCS:.c=.test)))
+CSRCS := $(wildcard $(SDIR)/**.c)
+CTRCS := $(wildcard $(TDIR)/**.c)
+OBJECTS := $(addprefix obj/, $(notdir $(CSRCS:.c=.o)))
+TESTS := $(addprefix test/, $(notdir $(CTRCS:.c=.test)))
 
-PROJECTS := libpthread.a
+PROJECTS := libmy_pthread.a
 
 .PHONY: all
 all: $(PROJECTS)
@@ -19,7 +19,7 @@ test: $(TESTS)
 
 .PHONY: clean
 clean: 
-	-rm -r obj test
+	-rm -r obj test *.a
 	
 .PHONY: obj_dir
 obj_dir:
@@ -30,10 +30,10 @@ test_dir:
 	mkdir -p test
 
 test/%.test: $(TDIR)/%.c test_dir $(PROJECTS)
-	$(CC) -o $@ -I$(SDIR) -L. -lpthread $(CFLAGS) $<
+	$(CC) -o $@ -I$(SDIR) $(CFLAGS) $(OBJECTS) $< 
 
-libpthread.a: $(OBJECTS)
+libmy_pthread.a: $(OBJECTS)
 	$(AR) $@ $^
 	
 obj/%.o: $(SDIR)/%.c obj_dir
-	$(CC) -o $@ $(CFLAGS) -DNUSER $< -c
+	$(CC) -o $@ $(CFLAGS) $< -c

@@ -1,6 +1,6 @@
 #define NUSER
-#include "malloc/thread_entries.h"
 #include "malloc/global.h"
+#include "malloc/thread_entries.h"
 #include "malloc/type.h"
 #include "malloc/segment.h"
 
@@ -15,10 +15,7 @@
 tNode *tHead;
 ssize_t file_tail_pos;
 
-
-
-// TODO: Hook to my_pthread_create
-void init_thread(ssize_t thread_id) {
+void Sinit_thread(ssize_t thread_id) {
   tNode* new_node = (tNode*) _lib_malloc(sizeof(tNode));
   new_node->thread_id = thread_id;
   new_node->pHead = NULL;
@@ -38,8 +35,7 @@ int search_thread(ssize_t thread_id, tNode **target) {
   return -1;
 }
 
-// TODO: Hook to my_pthread_destroy
-void delete_thread(ssize_t key) {
+void Sdelete_thread(ssize_t key) {
   tNode *temp = tHead, *prev;
 
   if (temp != NULL && temp->thread_id == key) {
@@ -79,28 +75,22 @@ int _f_stack_is_full()
 int _f_stack_is_empty()
 { return f_stack.top == -1;  }
 
-void _f_stack_increase_capasity()
-  // TODO: increase capasity!!
-{
+void _f_stack_increase_capasity() {
   int temp = f_stack.capacity;
-  f_stack_t f_stack_new;
-  f_stack_new.capacity = 40;
-  f_stack_new.top = f_stack_new.capacity-temp-1;
-  f_stack_new.array = (ssize_t*) malloc(40*sizeof(ssize_t));
-  memcpy(f_stack_new.array,f_stack.array,strlen(f_stack.array));
+  f_stack.capacity *= 2;
+  ssize_t *new_array = (ssize_t*) malloc(f_stack.capacity*sizeof(ssize_t));
+  memcpy(new_array, f_stack.array, temp*sizeof(ssize_t));
   free(f_stack.array);
-  f_stack = f_stack_new;
-  return; 
+  f_stack.array = new_array;
 }
-void f_stack_push_seg(ssize_t item)
-{
+
+void f_stack_push_seg(ssize_t item) {
   if (_f_stack_is_full())
     _f_stack_increase_capasity();
   f_stack.array[++f_stack.top] = item;
 }
 
-ssize_t f_stack_pop_seg()
-{
+ssize_t f_stack_pop_seg() {
   if (_f_stack_is_empty())
     return -1;
   return f_stack.array[f_stack.top--];
