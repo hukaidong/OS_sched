@@ -95,7 +95,7 @@ DESTROY_THREAD(uctx_p target) {
   LOG(DESTROY_THREAD);
   fib_p fiber = UCTX_P2FIB_P(target);
   void *retval = fiber->rval;
-  free(UCT_P2STCK_P(target));
+  _lib_free(UCT_P2STCK_P(target));
   return retval;
 }
 

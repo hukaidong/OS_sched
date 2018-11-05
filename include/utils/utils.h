@@ -3,6 +3,8 @@
 #define MY_UTIL_H value
 #define UNUSED(x) (void)(x)
 
+#include <signal.h>
+#include <ucontext.h>
 #include <unistd.h>
 
 #ifdef DEBUG

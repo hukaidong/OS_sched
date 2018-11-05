@@ -1,8 +1,7 @@
 #ifndef MY_MALLOC_TYPE_H
 #define MY_MALLOC_TYPE_H
 
-#include <unistd.h>
-
+#include "utils/utils.h"
 
 #define PAGE_SIZE sysconf(_SC_PAGE_SIZE)
 #define ABSOLUTE_MOVE(p, offset) do {\

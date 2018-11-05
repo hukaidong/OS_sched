@@ -29,11 +29,11 @@ obj_dir:
 test_dir:
 	mkdir -p test
 
-test/%.test: $(TDIR)/%.c test_dir
-	$(CC) -o $@ -I$(SDIR) $(CFLAGS) $<
+test/%.test: $(TDIR)/%.c test_dir $(PROJECTS)
+	$(CC) -o $@ -I$(SDIR) -L. -lpthread $(CFLAGS) $<
 
 libpthread.a: $(OBJECTS)
 	$(AR) $@ $^
 	
 obj/%.o: $(SDIR)/%.c obj_dir
-	$(CC) -o $@ $(CFLAGS) $< -c
+	$(CC) -o $@ $(CFLAGS) -DNUSER $< -c

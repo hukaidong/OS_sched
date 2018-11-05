@@ -5,7 +5,6 @@
 #include "utils/utils.h"
 #include "my_malloc.h"
 #include "malloc/global.h"
-#include "malloc/thread_entries.h"
 
 
 int my_pthread_create(

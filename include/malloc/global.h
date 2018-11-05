@@ -2,8 +2,8 @@
 #define MY_MALLOC_GLOBAL_H
 
 #include <sys/mman.h>
-#include "type.h"
 #include "pthread/type.h"
+#include "type.h"
 
 #define UNIT_MB 0x100000
 #define UNIT_KB 0x000400
