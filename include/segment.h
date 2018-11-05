@@ -1,6 +1,6 @@
 #ifndef MY_MALLOC_SEGMENT_H
 #define MY_MALLOC_SEGMENT_H value
-#include "type.h"
+#include "types.h"
 
 int seg_init(void *pte, int page_num, int size_req);
 void sys_seg_init(void *pte, void *ptn_end);

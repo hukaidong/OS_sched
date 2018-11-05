@@ -9,24 +9,8 @@
 #include "my_malloc.h"
 #endif
 
+#include "types.h"
 #include "utils/utils.h"
-
-struct pNode_s
-{
-  int page_idx;
-  struct pNode_s *next;
-};
-
-struct tNode_s
-{
-  ssize_t thread_id;
-  int num_page_claimed;
-  struct pNode_s **pHead;
-  struct tNode_s  *next;
-};
-
-typedef struct pNode_s pNode;
-typedef struct tNode_s tNode;
 
 void __ds_init();
 int search_thread(ssize_t thread_id, tNode **target);

@@ -1,9 +1,4 @@
-#ifndef MY_PTHREAD_QUEUE_H
-#define MY_PTHREAD_QUEUE_H
-
-#include <stdbool.h>
-#include "type.h"
-#include "utils/utils.h"
+#include "thread_queue.h"
 
 inline void q_init(Quctx *queue) {
   LOG(q_init);
@@ -31,4 +26,3 @@ inline uctx_p pop(Quctx *queue) {
   return temp;
 }
 
-#endif  /* ifndef MY_PTHREAD_QUEUE_H */

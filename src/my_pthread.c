@@ -1,10 +1,11 @@
 #include "my_pthread.h"
-#include "pthread/sched.h"
-#include "pthread/type.h"
-#include "pthread/queue.h"
+#include "sched.h"
+#include "types.h"
+#include "thread_queue.h"
 #include "utils/utils.h"
 #include "my_malloc.h"
-#include "malloc/global.h"
+#include "gvars.h"
+#include "casts.h"
 
 
 int my_pthread_create(

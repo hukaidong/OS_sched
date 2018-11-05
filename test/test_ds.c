@@ -1,9 +1,10 @@
 #define MOCK_MALLOC
-#include "malloc/page_file_map.h"
-#include "malloc/segment.h"
-#include "malloc/thread_entries.h"
-#include "malloc/global.h"
+#include "pfmap.h"
+#include "segment.h"
+#include "thread_entries.h"
+#include "gvars.h"
 #include "utils/minunit.h"
+#include "casts.h"
 
 ssize_t id = 1;
 ssize_t id_2 = 2;

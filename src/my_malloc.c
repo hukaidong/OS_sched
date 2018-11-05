@@ -1,9 +1,9 @@
 #include "my_malloc.h"
-#include "malloc/global.h"
-#include "malloc/segment.h"
-#include "malloc/page.h"
-#include "malloc/pcb.h"
-#include "pthread/type.h"
+#include "gvars.h"
+#include "segment.h"
+#include "page.h"
+#include "pcb.h"
+#include "types.h"
 #include "utils/utils.h"
 
 

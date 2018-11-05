@@ -1,5 +1,5 @@
-#include "malloc/type.h"
-#include "malloc/segment.h"
+#include "types.h"
+#include "segment.h"
 
 // return max size of segment available
 void sys_seg_init(void *pte, void *pte_end ) {

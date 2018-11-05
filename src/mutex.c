@@ -1,9 +1,10 @@
 #include "my_pthread.h"
 
-#include "pthread/sched.h"
-#include "pthread/queue.h"
-#include "pthread/type.h"
-#include "malloc/global.h"
+#include "sched.h"
+#include "thread_queue.h"
+#include "types.h"
+#include "gvars.h"
+#include "casts.h"
 
 #include <signal.h>
 #include <ucontext.h>

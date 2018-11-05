@@ -1,8 +1,9 @@
 #define NUSER
-#include "malloc/global.h"
-#include "malloc/thread_entries.h"
-#include "malloc/type.h"
-#include "malloc/segment.h"
+#include "gvars.h"
+#include "thread_entries.h"
+#include "types.h"
+#include "segment.h"
+#include "casts.h"
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -12,55 +13,10 @@
 #include <string.h>
 
 
-tNode *tHead;
-ssize_t file_tail_pos;
 
-void Sinit_thread(ssize_t thread_id) {
-  tNode* new_node = (tNode*) _lib_malloc(sizeof(tNode));
-  new_node->thread_id = thread_id;
-  new_node->pHead = NULL;
-  new_node->next = tHead;
-  tHead = new_node;
-}
 
-int search_thread(ssize_t thread_id, tNode **target) {
-  tNode* current = tHead;
-  while (current != NULL) {
-    if (current->thread_id == thread_id) {
-      *target = current;
-      return 1;
-    }
-    current = current->next;
-  }
-  return -1;
-}
+#include "pfmap.h"
 
-void Sdelete_thread(ssize_t key) {
-  tNode *temp = tHead, *prev;
-
-  if (temp != NULL && temp->thread_id == key) {
-    // TODO: free pNodes?
-    tHead = temp->next;
-    _lib_free(temp);
-    return;
-  }
-
-  while (temp != NULL && temp->thread_id != key) {
-    prev = temp;
-    temp = temp->next;
-  }
-
-  if (temp == NULL) return;
-  prev->next = temp->next;
-
-  free(temp);
-}
-
-#include "malloc/page_file_map.h"
-
-sNode *s_head;
-f_stack_t f_stack;
-int swap_fd;
 
 void init_file_and_stack() {
   f_stack.capacity = 20;
@@ -179,7 +135,7 @@ int pop_swap_page(ssize_t thread_id, ssize_t page_idx) {
 }
 
 #include <sys/mman.h>
-#include "malloc/pcb.h"
+#include "pcb.h"
 
 
 void _thread_purge(ssize_t thread_id) {
@@ -193,7 +149,7 @@ void _thread_purge(ssize_t thread_id) {
   }
 }
 
-ssize_t new_free_page(ssize_t thread_id, int size) {
+ssize_t pcb_next_free_page(ssize_t thread_id, int size) {
   ssize_t p = pwander, rsize=size;
   for (; p<PCB_SIZE; p++) {
     if(pcb[p].thread_id < 0) {
@@ -222,7 +178,7 @@ ssize_t new_free_page(ssize_t thread_id, int size) {
   return -1;
 }
 
-ssize_t new_swapable_page(ssize_t thread_id, int size) {
+ssize_t pcb_next_swapable_page(ssize_t thread_id, int size) {
   ssize_t p = pwander, rsize=size;
   for (; p<PCB_SIZE; p++) {
     if(pcb[p].thread_id != thread_id) {

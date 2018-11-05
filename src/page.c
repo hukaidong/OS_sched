@@ -2,14 +2,14 @@
 #include <sys/mman.h>
 
 #include "my_malloc.h"
-#include "malloc/type.h"
-#include "malloc/global.h"
-#include "malloc/thread_entries.h"
-#include "malloc/page.h"
-#include "malloc/pcb.h"
-#include "malloc/page_file_map.h"
-#include "pthread/type.h"
-#include "malloc/segment.h"
+#include "types.h"
+#include "gvars.h"
+#include "thread_entries.h"
+#include "page.h"
+#include "pcb.h"
+#include "pfmap.h"
+#include "segment.h"
+#include "casts.h"
 
 // TODO: bind to scheduler
 void _page_setup() {
@@ -64,8 +64,7 @@ void *new_page(size_t size_req, ssize_t thread_id) {
 
 void release_page(ssize_t pidx, ssize_t thread_id) {
   if(pcb[pidx].thread_id!= thread_id){
-    insert_swap_page(pidx);
-    page_swap_in_virtual(pidx, thread_id);
+    remove_swap_page(pidx, thread_id);
   }
   pcb[pidx].thread_id = -1;
   pcb[pidx].max_avail = -1;

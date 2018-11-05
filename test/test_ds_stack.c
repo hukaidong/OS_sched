@@ -1,10 +1,9 @@
 #define MOCK_MALLOC
-#include "malloc/page_file_map.h"
-#include "malloc/segment.h"
-#include "malloc/thread_entries.h"
+#include "pfmap.h"
+#include "gvars.h"
+#include "segment.h"
+#include "thread_entries.h"
 #include "utils/minunit.h"
-#include "../src/ds.c"
-#include "../src/segment.c"
 
 int foo = 0;
 MU_TEST(test_check){

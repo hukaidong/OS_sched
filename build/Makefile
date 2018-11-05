@@ -30,7 +30,7 @@ test_dir:
 	mkdir -p test
 
 test/%.test: $(TDIR)/%.c test_dir $(PROJECTS)
-	$(CC) -o $@ -I$(SDIR) $(CFLAGS) $(OBJECTS) $< 
+	$(CC) -o $@ -I$(SDIR) $(CFLAGS) $(OBJECTS) $< -ggdb
 
 libmy_pthread.a: $(OBJECTS)
 	$(AR) $@ $^
