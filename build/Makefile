@@ -3,11 +3,12 @@ AR = ar rcs
 IDIR = ../include
 SDIR = ../src
 TDIR = ../test
-CFLAGS := -I$(IDIR) -Wfatal-errors -g -Wall
+CFLAGS := -I$(IDIR) -Wfatal-errors -g -Wall -DNO_INIT
 CSRCS := $(wildcard $(SDIR)/**.c)
 CTRCS := $(wildcard $(TDIR)/**.c)
 OBJECTS := $(addprefix obj/, $(notdir $(CSRCS:.c=.o)))
 TESTS := $(addprefix test/, $(notdir $(CTRCS:.c=.test)))
+
 
 PROJECTS := libmy_pthread.a
 
@@ -15,7 +16,7 @@ PROJECTS := libmy_pthread.a
 all: $(PROJECTS)
 
 .PHONY: test
-test: $(TESTS) 
+test: $(TESTS)
 
 .PHONY: clean
 clean: 

@@ -270,7 +270,9 @@ ucontext_t* __sched_q_route() {
   return next;
 }
 
+#ifndef NO_INIT
 void __attribute__ ((constructor)) constructor () { __sched_init(); }
 void __attribute__ ((destructor)) destructor () { __sched_deinit(); }
+#endif
 
 #undef NUSER
