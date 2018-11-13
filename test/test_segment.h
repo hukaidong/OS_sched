@@ -3,14 +3,16 @@
 #include "types.h"
 #include "const.h"
 #include "segment.h"
+
 #include "utils/utils.h"
 #include "utils/minunit.h"
 
-#include "string.h"
+#include "test_gvar.h"
 
-char buff[8*UNIT_MB];
-char buff_bkp[8*UNIT_MB];
-int seg_s = sizeof(segment_header);
+#include <string.h>
+
+char buff[8*UNIT_KB];
+char buff_bkp[8*UNIT_KB];
 
 MU_TEST(test_putils_move) {
   int *iptr = (int *)buff;
@@ -66,7 +68,7 @@ MU_TEST_SUITE(test_macros){
 }
 
 void seg_test_setup() {
-  memset(buff, 0, sizeof(buff));
+  memset(buff, 0, 8*UNIT_KB);
 }
 
 void seg_test_teardown() {
@@ -83,7 +85,6 @@ MU_TEST(test_seg_init) {
 }
 
 MU_TEST(test_seg_insert) {
-  int seg_s = sizeof(segment_header);
   char *seg_st = buff;
   char *seg_end = &buff[8*UNIT_KB];
   sys_seg_init(seg_st, seg_end);
@@ -114,7 +115,6 @@ MU_TEST(test_seg_insert) {
 }
 
 MU_TEST(test_seg_free) {
-  int seg_s = sizeof(segment_header);
   char *seg_st = buff;
   char *seg_end = &buff[8*UNIT_KB];
   sys_seg_init(seg_st, seg_end);
@@ -172,7 +172,7 @@ MU_TEST(test_seg_free) {
   }
   mu_assert(cursor==seg, "Travel through segments failed");
   mu_assert_int_eq(14, ticking);
-  memcpy(buff_bkp, buff, sizeof(buff));
+  memcpy(buff_bkp, buff, 8*UNIT_KB);
 }
 
 MU_TEST_SUITE(test_segments_prep){
@@ -183,7 +183,7 @@ MU_TEST_SUITE(test_segments_prep){
 }
 
 void seg_cplx_setup(){
-  memcpy(buff, buff_bkp, sizeof(buff));
+  memcpy(buff, buff_bkp, 8*UNIT_KB);
 }
 
 void seg_cplx_teardown(){
@@ -213,21 +213,73 @@ MU_TEST(cplx_seg_finds) {
   mu_assert( (new_seg2) == (new_seg->next_seg),
       "Returning new seg failed");
 }
+
+MU_TEST(cplx_seg_combine) {
+  seg_p seg = (seg_p) buff,
+        seg1k = seg->next_seg,
+        seg2k = seg1k->next_seg,
+        seg3k = seg2k->next_seg,
+        seg4k = seg3k->next_seg,
+        seg5k = seg4k->next_seg,
+        seg6k = seg5k->next_seg,
+        seg7k = seg6k->next_seg;
+  /*
+   * assume current mem struct is
+   * |0   |1   |2   |3   |4   |5   |6   |7   |
+   * |free|used|free|used|free|used|free|used|
+   */
+
+  seg_free(seg1k);
+  /*
+   * assume current mem struct is
+   * |0             |3   |4   |5   |6   |7   |
+   * |free          |used|free|used|free|used|
+   */
+  int remain = seg_find_preceeding_max_size(seg);
+  mu_assert_int_eq(3*UNIT_KB-seg_s, remain);
+  mu_check(seg->next_seg = seg3k);
+  mu_check(seg3k->prev_seg = seg);
+
+  seg_free(seg7k);
+  /*
+   * assume current mem struct is
+   * |0             |3   |4   |5   |6        |
+   * |free          |used|free|used|free     |
+   */
+  mu_check(FLAG_CHECK(seg6k->flags, SEG_TERM_FMSK));
+  mu_assert_int_eq(8*UNIT_KB,
+      ABSOLUTE_OFFSET(seg6k->next_seg, seg));
+  remain = seg_find_preceeding_max_size(seg4k);
+  mu_assert_int_eq(2*UNIT_KB-seg_s, remain);
+
+  seg_free(seg5k);
+  seg_free(seg3k);
+  /*
+   * assume current mem struct is
+   * |0                                      |
+   * |free                                   |
+   */
+  mu_check(FLAG_CHECK(seg->flags, SEG_TERM_FMSK));
+  remain = seg_find_preceeding_max_size(seg);
+  mu_assert_int_eq(8*UNIT_KB-seg_s, remain);
+
+}
+
 MU_TEST_SUITE(test_segments_cplx){
   MU_SUITE_CONFIGURE(&seg_cplx_setup, &seg_cplx_teardown);
   MU_RUN_TEST(cplx_seg_finds);
+  MU_RUN_TEST(cplx_seg_combine);
 
 }
 
-int main(int argc, char **argv){
-  puts("--- Testing macros ---");
+void test_segment(){
+  puts("\n\t--- Testing macros ---");
   MU_RUN_SUITE(test_macros);
-  puts("");
-  puts("--- Testing segments (basic) ---");
+  puts("\n\t--- Testing segments (basic) ---");
   MU_RUN_SUITE(test_segments_prep);
-  puts("");
-  puts("--- Testing segments (more) ---");
+  puts("\n\t--- Testing segments (more) ---");
   MU_RUN_SUITE(test_segments_cplx);
-  MU_REPORT();
-  return minunit_status;
 }
+
+#undef MOCK_MALLOC
+#undef NUSER

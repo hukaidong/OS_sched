@@ -59,12 +59,12 @@ int seg_free(seg_p seg) {
       FLAG_CHECK(seg->prev_seg->flags, SEG_AVIL_FMSK)) {
     free_seg_head = seg->prev_seg;
     free_seg_head->next_seg = seg->next_seg;
+    FLAG_TRANSFER(free_seg_head->flags, seg->flags, SEG_TERM_FMSK);
   }
   if (!FLAG_CHECK(seg->flags, SEG_TERM_FMSK) &&
       FLAG_CHECK(seg->next_seg->flags, SEG_AVIL_FMSK)) {
+    FLAG_TRANSFER(free_seg_head->flags, seg->next_seg->flags, SEG_TERM_FMSK);
     free_seg_head->next_seg = seg->next_seg->next_seg;
-    FLAG_TRANSFER(free_seg_head->flags,
-        seg->next_seg->flags, SEG_TERM_FMSK);
   }
   return ABSOLUTE_OFFSET(free_seg_head->next_seg, free_seg_head) - sizeof(*seg);
 }
