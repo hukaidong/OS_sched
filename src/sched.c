@@ -129,7 +129,7 @@ void __sched_init() {
   makecontext(&ENTRY_EXIT_CTX, __sched_exit_next, 0);
 
   signal(SIGALRM, __sched_alarmed);
-  push(&QThreadH, &MAIN_CTX);
+  push(&QThreadL, &MAIN_CTX);
   swapcontext(&MAIN_CTX, &ENTRY_SCHED_CTX);
 }
 
