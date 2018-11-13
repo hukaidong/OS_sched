@@ -24,38 +24,21 @@ int seg_init(void *pte, int page_num, int size_req) {
   return seg_insert(seg, size_req);
 }
 
-// return first available segment pointer
-seg_p seg_find_avail(void *pte, int size) {
-  seg_p seg = (seg_p) pte;
-  int size_req = size + sizeof(*seg);
-
-  while ( !(FLAG_CHECK(seg->flags, SEG_AVIL_FMSK) &&
-      ABSOLUTE_OFFSET(seg->next_seg, seg) > size_req )) {
-    int a = FLAG_CHECK(seg->flags, SEG_AVIL_FMSK);
-    int b = ABSOLUTE_OFFSET(seg->next_seg, seg);
-    int c = FLAG_CHECK(seg->flags, SEG_TERM_FMSK);
-    if (FLAG_CHECK(seg->flags, SEG_TERM_FMSK))
-      return NULL;
-    seg = seg->next_seg;
-  }
-  return seg;
-}
-
 // return remain size of segment available
 int seg_insert(seg_p seg, int size) {
   int space = ABSOLUTE_OFFSET(seg->next_seg, seg),
-    rest_space = space - size + 2*(int)sizeof(*seg);
+    rest_space = space - (size + 2*(int)sizeof(*seg));
   FLAG_UNSET(seg->flags, SEG_AVIL_FMSK);
   if (rest_space > 0) {
     seg_p new_seg = seg;
     ABSOLUTE_MOVE(new_seg, size + sizeof (*seg));
-    seg->next_seg = new_seg;
 
     new_seg->prev_seg = seg;
     new_seg->next_seg = seg->next_seg;
     new_seg->flags = 0;
     FLAG_SET(new_seg->flags, SEG_AVIL_FMSK);
 
+    seg->next_seg = new_seg;
     if (FLAG_CHECK(seg->flags, SEG_TERM_FMSK)) {
       FLAG_UNSET(seg->flags, SEG_TERM_FMSK);
       FLAG_SET(new_seg->flags, SEG_TERM_FMSK);
@@ -67,21 +50,6 @@ int seg_insert(seg_p seg, int size) {
   } else {
     return 0;
   }
-}
-
-// return max size of segment available
-int seg_find_preceeding_max_size(seg_p seg) {
-  int max = 0;
-  do {
-    if(FLAG_CHECK(seg->flags, SEG_AVIL_FMSK)) {
-      max = MAX(max, ABSOLUTE_OFFSET(seg->next_seg, seg) - (int)sizeof(*seg));
-    };
-
-    if(FLAG_CHECK(seg->flags, SEG_TERM_FMSK)) { break; }
-
-    seg = seg->next_seg;
-  } while (1);
-  return max;
 }
 
 int seg_free(seg_p seg) {
@@ -105,20 +73,7 @@ int seg_free(seg_p seg) {
 int sys_seg_free(void* p) {
   seg_p seg = (seg_p) p;
   ABSOLUTE_MOVE(seg, -sizeof(segment_header));
-  FLAG_SET(seg->flags, SEG_AVIL_FMSK);
-  seg_p free_seg_head = seg;
-  if (seg->prev_seg != NULL &&
-      FLAG_CHECK(seg->prev_seg->flags, SEG_AVIL_FMSK)) {
-    free_seg_head = seg->prev_seg;
-    free_seg_head->next_seg = seg->next_seg;
-  }
-  if (!FLAG_CHECK(seg->flags, SEG_TERM_FMSK) &&
-      FLAG_CHECK(seg->next_seg->flags, SEG_AVIL_FMSK)) {
-    free_seg_head->next_seg = seg->next_seg->next_seg;
-    FLAG_TRANSFER(free_seg_head->flags,
-        seg->next_seg->flags, SEG_TERM_FMSK);
-  }
-  return ABSOLUTE_OFFSET(free_seg_head->next_seg, free_seg_head) - sizeof(*seg);
+  return seg_free(seg);
 }
 
 int seg_page_free(void** p) {
@@ -137,3 +92,33 @@ int seg_page_free(void** p) {
 
   return num_page_to_free;
 }
+
+// return first available segment pointer
+seg_p seg_find_avail(void *pte, int size) {
+  seg_p seg = (seg_p) pte;
+  int size_req = size + sizeof(*seg);
+
+  while ( !(FLAG_CHECK(seg->flags, SEG_AVIL_FMSK) &&
+      ABSOLUTE_OFFSET(seg->next_seg, seg) >= size_req )) {
+    if (FLAG_CHECK(seg->flags, SEG_TERM_FMSK))
+      return NULL;
+    seg = seg->next_seg;
+  }
+  return seg;
+}
+
+// return max size of segment available
+int seg_find_preceeding_max_size(seg_p seg) {
+  int max = 0;
+  do {
+    if(FLAG_CHECK(seg->flags, SEG_AVIL_FMSK)) {
+      max = MAX(max, ABSOLUTE_OFFSET(seg->next_seg, seg) - (int)sizeof(*seg));
+    };
+
+    if(FLAG_CHECK(seg->flags, SEG_TERM_FMSK)) { break; }
+
+    seg = seg->next_seg;
+  } while (1);
+  return max;
+}
+

@@ -32,6 +32,7 @@ test_dir:
 
 test/%.test: $(TDIR)/%.c test_dir $(PROJECTS)
 	$(CC) -o $@ -I$(SDIR) $(CFLAGS) $(OBJECTS) $< -ggdb
+	-./$@
 
 libmy_pthread.a: $(OBJECTS)
 	$(AR) $@ $^
