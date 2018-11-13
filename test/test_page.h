@@ -1,6 +1,7 @@
 #define MOCK_MALLOC
 #define NUSER
 #include "gvars.h"
+#include "casts.h"
 #include "segment.h"
 #include "thread_entries.h"
 
@@ -33,10 +34,15 @@ MU_TEST(test_page_dummy_check) {
 
 }
 
+MU_TEST(test_page_mode_swap) {
+  _enter_sys_mode();
+  _enter_user_mode(0);
+}
+
 MU_TEST_SUITE(test_page_basic) {
   MU_SUITE_CONFIGURE(&page_test_setup, &page_test_teardown);
   MU_RUN_TEST(test_page_dummy_check);
-
+  MU_RUN_TEST(test_page_mode_swap);
 }
 
 void test_page() {
