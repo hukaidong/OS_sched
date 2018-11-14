@@ -1,4 +1,3 @@
-#define MOCK_MALLOC
 #define NUSER
 #include "gvars.h"
 #include "casts.h"
@@ -55,5 +54,4 @@ void test_page() {
   puts("\n\t--- Testing paging (basic) ---");
   MU_RUN_SUITE(test_page_basic);
 }
-#undef MOCK_MALLOC
 #undef NUSER
