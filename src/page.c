@@ -18,8 +18,8 @@ void _page_setup() {
   sigemptyset(&sa.sa_mask);
   sa.sa_sigaction = page_segfault_handler;
   sigaction(SIGSEGV, &sa, NULL);
-
 }
+
 void _page_protect(ssize_t pidx) {
   mprotect(
       page_index_2_base(pidx),

@@ -12,7 +12,10 @@
 
 #define _STACK_SIZE sizeof(my_stack_t)
 #define _THREAD_SIZE sizeof(my_thread_t)
-#define _NEW_STACK() _lib_malloc(_STACK_SIZE)
+#define _NEW_STACK() malloc(_STACK_SIZE)
+
+char sys_stack[3*_STACK_SIZE];
+int stack_idx=0;
 
 inline void* _NEW_THREAD() {
   void *p = new_page(sizeof(my_stack_t), 0);
@@ -27,6 +30,16 @@ _INIT_CTX(uctx_p ctx, const uctx_p link) {
   getcontext(ctx);
   ctx->uc_link = link;
   ctx->uc_stack.ss_sp = _NEW_STACK();
+  ctx->uc_stack.ss_size = _STACK_SIZE;
+  ctx->uc_stack.ss_flags = 0;
+}
+
+inline void
+_INIT_CTX_SYS(uctx_p ctx, const uctx_p link) {
+  LOG(_INIT_CTX);
+  getcontext(ctx);
+  ctx->uc_link = link;
+  ctx->uc_stack.ss_sp = sys_stack + _STACK_SIZE*stack_idx++;
   ctx->uc_stack.ss_size = _STACK_SIZE;
   ctx->uc_stack.ss_flags = 0;
 }
@@ -120,11 +133,11 @@ void __sched_init() {
   q_init(&QThreadM);
   q_init(&QThreadL);
 
-  _INIT_CTX(&ENTRY_SCHED_CTX, NULL);
+  _INIT_CTX_SYS(&ENTRY_SCHED_CTX, NULL);
   sigaddset(&(ENTRY_SCHED_CTX.uc_sigmask), SIGALRM);
   makecontext(&ENTRY_SCHED_CTX, __sched_interrupt_next, 0);
 
-  _INIT_CTX(&ENTRY_EXIT_CTX, NULL);
+  _INIT_CTX_SYS(&ENTRY_EXIT_CTX, NULL);
   sigaddset(&(ENTRY_EXIT_CTX.uc_sigmask), SIGALRM);
   makecontext(&ENTRY_EXIT_CTX, __sched_exit_next, 0);
 
@@ -134,8 +147,6 @@ void __sched_init() {
 }
 
 void __sched_deinit() {
-  _lib_free(UCT_P2STCK_P(&ENTRY_SCHED_CTX));
-  _lib_free(UCT_P2STCK_P(&ENTRY_EXIT_CTX));
 }
 
 void __sched_alarmed(int signum) {

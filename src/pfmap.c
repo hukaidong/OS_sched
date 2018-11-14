@@ -1,8 +1,7 @@
-#define NUSER
-
 #include "gvars.h"
 #include "pfmap.h"
 #include "casts.h"
+#include "my_malloc.h"
 
 #include <fcntl.h>
 #include <string.h>
@@ -123,4 +122,3 @@ int pop_swap_page(ssize_t thread_id, ssize_t page_idx) {
   return 1;
 }
 
-#undef NUSER

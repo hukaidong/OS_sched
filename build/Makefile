@@ -3,7 +3,7 @@ AR = ar rcs
 IDIR = ../include
 SDIR = ../src
 TDIR = ../test
-CFLAGS := -I$(IDIR) -Wfatal-errors -g -Wall -DNO_INIT
+CFLAGS := -I$(IDIR) -Wfatal-errors -g -Wall
 CSRCS := $(wildcard $(SDIR)/**.c)
 CTRCS := $(wildcard $(TDIR)/**.c)
 OBJECTS := $(addprefix obj/, $(notdir $(CSRCS:.c=.o)))
