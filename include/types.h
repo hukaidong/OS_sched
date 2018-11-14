@@ -8,7 +8,7 @@ typedef struct segment_header {
   struct segment_header *prev_seg;
   struct segment_header *next_seg;
   unsigned int    flags;
-  char            buf[0];
+  char            buf[1];
 } segment_header, *seg_p;
 
 typedef struct page_entry {

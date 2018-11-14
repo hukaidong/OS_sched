@@ -6,8 +6,8 @@
 
 #define PAGE_MSK (8*UNIT_MB-4*UNIT_KB)
 #define PAGE_OFFSET 12
-#define PAGE_SIZE 4*UNIT_KB
-#define PAGE_LIM_PER_THREAD 1*UNIT_KB
+#define PAGE_SIZE (4*UNIT_KB)
+#define PAGE_LIM_PER_THREAD (4*UNIT_KB)
 
 #define PCB_SIZE ((6*UNIT_MB) / (4*UNIT_KB))
 #define P_RW (PROT_READ | PROT_WRITE)

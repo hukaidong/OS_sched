@@ -34,14 +34,15 @@ void _page_unprotect(ssize_t pidx) {
 
 void *new_page(size_t size_req, ssize_t thread_id) {
   int i;
-  int req_page_num = (size_req + sizeof(segment_header)) / PAGE_SIZE + 1;
+  size_t req_page_num = (size_req + sizeof(segment_header)) / PAGE_SIZE + 1;
   ssize_t pidx;
   tNode* thread_e;
   search_thread(thread_id, &thread_e);
   if(thread_e->num_page_claimed > PAGE_LIM_PER_THREAD)
     return NULL;
   else{
-    if((pidx = pcb_next_free_page(thread_id, req_page_num))<0) {
+    pidx = pcb_next_free_page(thread_id, req_page_num);
+    if(pidx < 0) {
       pidx = pcb_next_swapable_page(thread_id, req_page_num);
       if (pidx >= 0) {
         for (i=0; i<req_page_num; i++) {

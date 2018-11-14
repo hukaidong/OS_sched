@@ -16,5 +16,6 @@ void __ds_init() {
   sys_seg_init(shared_vm_base, (char*)vm_base+VM_SIZE);
   memset(pcb, -1, sizeof(pcb));
   mprotect(vm_base, 6*UNIT_MB, P_N);
+  init_thread(0);
 }
 #undef NUSER

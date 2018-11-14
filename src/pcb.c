@@ -23,7 +23,7 @@ ssize_t pcb_next_free_page(ssize_t thread_id, int size) {
     if(pcb[p].thread_id < 0) {
       if (rsize == 1) {
         pwander = p;
-        return p - size;
+        return p - size + 1;
       }
       rsize--;
     } else {
